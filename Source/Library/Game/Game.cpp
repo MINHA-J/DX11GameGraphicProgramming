@@ -260,14 +260,9 @@ namespace library
 
     void Render()
     {
-        //
         // Clear the backbuffer
-        //
-        ID3D11RenderTargetView* renderTarget;
-        renderTarget = m_pRenderTarget.Get();
-
         float ClearColor[4] = { 0.0f, 0.125f, 0.6f, 1.0f }; // RGBA
-        m_pd3dDeviceContext->ClearRenderTargetView(renderTarget, ClearColor);
+        m_pd3dDeviceContext->ClearRenderTargetView(m_pRenderTarget.Get(), ClearColor);
 
         m_pDXGISwapChain->Present(0, 0);
         
