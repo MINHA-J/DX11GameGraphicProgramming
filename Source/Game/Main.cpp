@@ -38,17 +38,13 @@ using namespace library;
 -----------------------------------------------------------------F-F*/
 INT WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPWSTR lpCmdLine, _In_ INT nCmdShow)
 {
-    /*--------------------------------------------------------------------
-      TODO: Unreferenced parameters (remove the comment)
-    --------------------------------------------------------------------*/
+    
     bool bGotMsg;
     MSG  msg;
     msg.message = WM_NULL;
     PeekMessage(&msg, NULL, 0U, 0U, PM_NOREMOVE);
    
-    /*--------------------------------------------------------------------
-      TODO: Initialization (remove the comment)
-    --------------------------------------------------------------------*/
+    
     if (FAILED(library::InitWindow(hInstance, nCmdShow)))
     {
         return 0;
@@ -81,15 +77,6 @@ INT WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
         }
     }
 
-    /*--------------------------------------------------------------------
-      TODO: Main message loop (remove the comment)
-    --------------------------------------------------------------------*/
-
- 
-
-    /*--------------------------------------------------------------------
-      TODO: Destroy (remove the comment)
-    --------------------------------------------------------------------*/
     library::CleanupDevice();
 
     return static_cast<INT>(msg.wParam);

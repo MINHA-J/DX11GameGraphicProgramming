@@ -5,18 +5,15 @@ namespace library
     /*--------------------------------------------------------------------
       Global Variables
     --------------------------------------------------------------------*/
-    /*--------------------------------------------------------------------
-      TODO: Initialize global variables (remove the comment)
-    --------------------------------------------------------------------*/
     HINSTANCE               g_hInst = NULL;
     HWND                    g_hWnd = NULL;
 
-    Microsoft::WRL::ComPtr<ID3D11Device> m_pd3dDevice = nullptr;
-    Microsoft::WRL::ComPtr<ID3D11DeviceContext> m_pd3dDeviceContext = nullptr;
-    Microsoft::WRL::ComPtr<IDXGISwapChain> m_pDXGISwapChain = nullptr;
+    Microsoft::WRL::ComPtr<ID3D11Device> m_pd3dDevice;
+    Microsoft::WRL::ComPtr<ID3D11DeviceContext> m_pd3dDeviceContext;
+    Microsoft::WRL::ComPtr<IDXGISwapChain> m_pDXGISwapChain;
 
-    Microsoft::WRL::ComPtr < ID3D11Texture2D>        m_pBackBuffer = nullptr;
-    Microsoft::WRL::ComPtr < ID3D11RenderTargetView> m_pRenderTarget = nullptr;
+    Microsoft::WRL::ComPtr < ID3D11Texture2D>        m_pBackBuffer;
+    Microsoft::WRL::ComPtr < ID3D11RenderTargetView> m_pRenderTarget;
 
     D3D11_TEXTURE2D_DESC    m_bbDesc;
     D3D11_VIEWPORT          m_viewport;
@@ -66,10 +63,6 @@ namespace library
 
         return DefWindowProc(hWnd, uMsg, wParam, lParam);
     }
-
-    /*--------------------------------------------------------------------
-      TODO: Function definitions (remove this comment)
-    --------------------------------------------------------------------*/
 
     HRESULT InitWindow(_In_ HINSTANCE hInstance, _In_ INT nCmdShow)
     {
@@ -258,12 +251,11 @@ namespace library
     void CleanupDevice()
     {
         if (m_pd3dDeviceContext) m_pd3dDeviceContext->ClearState();
-       
-        if (m_pRenderTarget)m_pRenderTarget.Reset();
-        if (m_pDXGISwapChain)m_pDXGISwapChain.Reset();
-        if (m_pd3dDeviceContext)m_pd3dDeviceContext.Reset();
-        if (m_pd3dDevice)m_pd3dDevice.Reset();
-        
+
+        if (m_pRenderTarget != nullptr)m_pRenderTarget.ReleaseAndGetAddressOf();
+        if (m_pDXGISwapChain != nullptr)m_pDXGISwapChain.ReleaseAndGetAddressOf();
+        if (m_pd3dDeviceContext != nullptr)m_pd3dDeviceContext.ReleaseAndGetAddressOf();
+        if (m_pd3dDevice != nullptr)m_pd3dDevice.ReleaseAndGetAddressOf();
     }
 
     void Render()
