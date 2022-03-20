@@ -21,9 +21,8 @@
 #include <directxcolors.h>
 
 // Puls
-#include <d3d11.h>
 #include <wrl.h>
-#include <dxgi.h>
+ // #include <dxgi.h>
 
 #include "Resource.h"
 

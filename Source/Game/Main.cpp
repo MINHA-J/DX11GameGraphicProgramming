@@ -38,13 +38,7 @@ using namespace library;
 -----------------------------------------------------------------F-F*/
 INT WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPWSTR lpCmdLine, _In_ INT nCmdShow)
 {
-    
-    bool bGotMsg;
-    MSG  msg;
-    msg.message = WM_NULL;
-    PeekMessage(&msg, NULL, 0U, 0U, PM_NOREMOVE);
-   
-    
+
     if (FAILED(library::InitWindow(hInstance, nCmdShow)))
     {
         return 0;
@@ -57,7 +51,8 @@ INT WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
     }
 
     // Main message loop
-    msg = { 0 };
+    MSG msg = { 0 };
+    bool bGotMsg;
 
     while (WM_QUIT != msg.message)
     {

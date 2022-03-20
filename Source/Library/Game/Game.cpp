@@ -265,6 +265,5 @@ namespace library
         m_pd3dDeviceContext->ClearRenderTargetView(m_pRenderTarget.Get(), ClearColor);
 
         m_pDXGISwapChain->Present(0, 0);
-        
     }
 }
