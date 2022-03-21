@@ -8,15 +8,15 @@ namespace library
     HINSTANCE               g_hInst = NULL;
     HWND                    g_hWnd = NULL;
 
-    Microsoft::WRL::ComPtr<ID3D11Device> m_pd3dDevice;
-    Microsoft::WRL::ComPtr<ID3D11DeviceContext> m_pd3dDeviceContext;
-    Microsoft::WRL::ComPtr<IDXGISwapChain> m_pDXGISwapChain;
+    Microsoft::WRL::ComPtr<ID3D11Device> g_pd3dDevice;
+    Microsoft::WRL::ComPtr<ID3D11DeviceContext> g_pd3dDeviceContext;
+    Microsoft::WRL::ComPtr<IDXGISwapChain> g_pDXGISwapChain;
 
-    Microsoft::WRL::ComPtr < ID3D11Texture2D>        m_pBackBuffer;
-    Microsoft::WRL::ComPtr < ID3D11RenderTargetView> m_pRenderTarget;
+    Microsoft::WRL::ComPtr < ID3D11Texture2D>        g_pBackBuffer;
+    Microsoft::WRL::ComPtr < ID3D11RenderTargetView> g_pRenderTarget;
 
-    D3D11_TEXTURE2D_DESC    m_bbDesc;
-    D3D11_VIEWPORT          m_viewport;
+    D3D11_TEXTURE2D_DESC    g_bbDesc;
+    D3D11_VIEWPORT          g_viewport;
 
     /*--------------------------------------------------------------------
       Forward declarations
@@ -75,12 +75,12 @@ namespace library
         wcex.cbClsExtra = 0;
         wcex.cbWndExtra = 0;
         wcex.hInstance = hInstance;
-        wcex.hIcon = LoadIcon(hInstance, NULL);
+        wcex.hIcon = LoadIcon(hInstance, IDI_APPLICATION);
         wcex.hCursor = LoadCursor(NULL, IDC_ARROW);
         wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
         wcex.lpszMenuName = NULL;
         wcex.lpszClassName = L"WindowClass";
-        wcex.hIconSm = LoadIcon(wcex.hInstance, NULL);
+        wcex.hIconSm = LoadIcon(wcex.hInstance, IDI_APPLICATION);
 
         if (!RegisterClassEx(&wcex))
         {
@@ -178,8 +178,12 @@ namespace library
             return HRESULT_FROM_WIN32(dwError);
         }
 
-        device.As(&m_pd3dDevice);
-        context.As(&m_pd3dDeviceContext);
+        device.As(&g_pd3dDevice);
+        context.As(&g_pd3dDeviceContext);
+
+        /*if (device)device.Reset();
+        if (context)context.Reset();*/
+
 
         // Create Swap chain
         DXGI_SWAP_CHAIN_DESC desc;
@@ -195,7 +199,7 @@ namespace library
 
         // Create the DXGI device object to use in other factories, such as Direct2D.
         Microsoft::WRL::ComPtr<IDXGIDevice3> dxgiDevice;
-        m_pd3dDevice.As(&dxgiDevice);
+        g_pd3dDevice.As(&dxgiDevice);
 
         // Create swap chain.
         Microsoft::WRL::ComPtr<IDXGIAdapter> adapter;
@@ -208,22 +212,27 @@ namespace library
             adapter->GetParent(IID_PPV_ARGS(&factory));
 
             hr = factory->CreateSwapChain(
-                m_pd3dDevice.Get(),
+                g_pd3dDevice.Get(),
                 &desc,
-                &m_pDXGISwapChain
+                &g_pDXGISwapChain
             );
         }
+
+        /*if (dxgiDevice) dxgiDevice.Reset();
+        if (adapter) adapter.Reset();
+        if (factory) factory.Reset();*/
         
+
         // Create Render target view
-        hr = m_pDXGISwapChain->GetBuffer(
+        hr = g_pDXGISwapChain->GetBuffer(
             0,
             __uuidof(ID3D11Texture2D),
-            (void**)&m_pBackBuffer);
+            (void**)&g_pBackBuffer);
 
-        hr = m_pd3dDevice->CreateRenderTargetView(
-            m_pBackBuffer.Get(),
+        hr = g_pd3dDevice->CreateRenderTargetView(
+            g_pBackBuffer.Get(),
             nullptr,
-            m_pRenderTarget.GetAddressOf()
+            g_pRenderTarget.GetAddressOf()
         );
 
         if (FAILED(hr))
@@ -232,38 +241,40 @@ namespace library
             return HRESULT_FROM_WIN32(dwError);
         }
 
-        m_pBackBuffer->GetDesc(&m_bbDesc);
+        g_pBackBuffer->GetDesc(&g_bbDesc);
 
         // Create Viewport
-        ZeroMemory(&m_viewport, sizeof(D3D11_VIEWPORT));
-        m_viewport.Height = (float)m_bbDesc.Height;
-        m_viewport.Width = (float)m_bbDesc.Width;
-        m_viewport.MinDepth = 0;
-        m_viewport.MaxDepth = 1;
+        ZeroMemory(&g_viewport, sizeof(D3D11_VIEWPORT));
+        g_viewport.Height = (float)g_bbDesc.Height;
+        g_viewport.Width = (float)g_bbDesc.Width;
+        g_viewport.MinDepth = 0;
+        g_viewport.MaxDepth = 1;
 
-        m_pd3dDeviceContext->RSSetViewports(
+        g_pd3dDeviceContext->RSSetViewports(
             1,
-            &m_viewport
+            &g_viewport
         );
 
     }
 
     void CleanupDevice()
     {
-        if (m_pd3dDeviceContext) m_pd3dDeviceContext->ClearState();
+        if (g_pd3dDeviceContext) g_pd3dDeviceContext->ClearState();
 
-        if (m_pRenderTarget != nullptr)m_pRenderTarget.ReleaseAndGetAddressOf();
-        if (m_pDXGISwapChain != nullptr)m_pDXGISwapChain.ReleaseAndGetAddressOf();
-        if (m_pd3dDeviceContext != nullptr)m_pd3dDeviceContext.ReleaseAndGetAddressOf();
-        if (m_pd3dDevice != nullptr)m_pd3dDevice.ReleaseAndGetAddressOf();
+        if (g_pRenderTarget)g_pRenderTarget.Reset();
+        if (g_pBackBuffer) g_pBackBuffer.Reset();
+        if (g_pDXGISwapChain)g_pDXGISwapChain.Reset();
+
+        if (g_pd3dDeviceContext)g_pd3dDeviceContext.Reset();
+        if (g_pd3dDevice)g_pd3dDevice.Reset();
     }
 
     void Render()
     {
         // Clear the backbuffer
         float ClearColor[4] = { 0.0f, 0.125f, 0.6f, 1.0f }; // RGBA
-        m_pd3dDeviceContext->ClearRenderTargetView(m_pRenderTarget.Get(), ClearColor);
+        g_pd3dDeviceContext->ClearRenderTargetView(g_pRenderTarget.Get(), ClearColor);
 
-        m_pDXGISwapChain->Present(0, 0);
+        g_pDXGISwapChain->Present(0, 0);
     }
 }
