@@ -57,11 +57,11 @@ namespace library
     {
         if (uMsg == WM_CLOSE) {
             PostQuitMessage(0);
-            return 0;
+            return  E_FAIL;
         }
         else if (uMsg == WM_DESTROY) {
             DestroyWindow(m_hWnd);
-            return 0;
+            return E_FAIL;
         }
 
         return DefWindowProc(m_hWnd, uMsg, wParam, lParam);

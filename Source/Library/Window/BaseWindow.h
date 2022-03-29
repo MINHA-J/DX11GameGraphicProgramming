@@ -98,18 +98,21 @@ namespace library
     {
         DerivedType* pThis = NULL;
 
-        if (uMsg == WM_NCCREATE) {
+        if (uMsg == WM_NCCREATE) 
+        {
             CREATESTRUCT* pCreate = reinterpret_cast<CREATESTRUCT*>(lParam);
             pThis = reinterpret_cast<DerivedType*>(pCreate->lpCreateParams);
             SetWindowLongPtr(hWnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(pThis));
             
             pThis->m_hWnd = hWnd;
         }
-        else {
-            pThis = (DerivedType*)(GetWindowLongPtr(hWnd, GWLP_USERDATA));
+        else 
+        {
+            pThis = reinterpret_cast<DerivedType*>(GetWindowLongPtr(hWnd, GWLP_USERDATA));
         }
 
-        if (pThis) {
+        if (pThis) 
+        {
             return pThis->HandleMessage(uMsg, wParam, lParam);
         }
         else
@@ -126,12 +129,11 @@ namespace library
 
         Modifies: [m_hInstance, m_hWnd, m_pszWindowName].
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    template <class DerivedType> BaseWindow<DerivedType>::BaseWindow()
-    {
-        this->m_hInstance = NULL;
-        this->m_hWnd = NULL;
-        this->m_pszWindowName = NULL;
-    }
+    template <class DerivedType> BaseWindow<DerivedType>::BaseWindow() 
+        : m_hInstance(nullptr)
+        , m_hWnd(nullptr)
+        , m_pszWindowName(L"Default")
+    {}
 
 
     /*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
@@ -195,8 +197,8 @@ namespace library
         _In_opt_ HMENU hMenu)
     {
         // Register class
-        this->m_hInstance = hInstance;
-        this->m_pszWindowName = pszWindowName;
+        m_hInstance = hInstance;
+        m_pszWindowName = pszWindowName;
 
         WNDCLASS wc = { 0 };
 
@@ -208,18 +210,21 @@ namespace library
         wc.hbrBackground = (HBRUSH)COLOR_WINDOW;
         wc.lpszMenuName = NULL;
         
-
-        RegisterClass(&wc);
+        if (!RegisterClass(&wc))
+            return E_FAIL;
 
         // Create window
-        this->m_hWnd = CreateWindow(
-            GetWindowClassName(), pszWindowName, WS_OVERLAPPEDWINDOW, x, y,
-            nWidth, nHeight, hWndParent, hMenu, hInstance, this);
+        m_hWnd = CreateWindow(
+            GetWindowClassName(), m_pszWindowName, WS_OVERLAPPEDWINDOW, x, y,
+            nWidth, nHeight, hWndParent, hMenu, m_hInstance, this);
+
+        if (!m_hWnd)
+            return E_FAIL;
 
         // Shows the window
-        ShowWindow(this->m_hWnd, nCmdShow);
+        ShowWindow(m_hWnd, nCmdShow);
 
-        return (this->m_hWnd ? TRUE : FALSE);
+        return S_OK;
     }
 
 
