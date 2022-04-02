@@ -19,6 +19,8 @@
 #include <wrl.h>
 
 #include <d3d11_4.h>
+#include <d3dcompiler.h>
+#pragma comment(lib, "d3dcompiler.lib")
 #include <directxcolors.h>
 
 #include <memory>
