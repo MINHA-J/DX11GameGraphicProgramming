@@ -29,6 +29,12 @@ namespace library
                   Runs the game loop
                 GetGameName
                   Returns the name of the game
+                GetWindow
+                  Returns the reference to the unique pointer to the
+                  main window
+                GetRenderer
+                  Returns the reference to the unique pointer to the
+                  renderer
                 Game
                   Constructor.
                 ~Game
@@ -49,6 +55,8 @@ namespace library
         INT Run();
 
         PCWSTR GetGameName() const;
+        std::unique_ptr<MainWindow>& GetWindow();
+        std::unique_ptr<Renderer>& GetRenderer();
     private:
         PCWSTR m_pszGameName;
         std::unique_ptr<MainWindow> m_mainWindow;
