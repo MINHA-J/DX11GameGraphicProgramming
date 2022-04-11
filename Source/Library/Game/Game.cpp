@@ -86,8 +86,16 @@ namespace library
 
 				QueryPerformanceFrequency(&Frequency);
 				QueryPerformanceCounter(&StartingTime);
+
+				m_renderer->HandleInput(
+					m_mainWindow->GetDirections(),
+					m_mainWindow->GetMouseRelativeMovement(),
+					FLOAT(ElapsedMicroseconds.QuadPart) / 1000000.0f);
+
+				m_mainWindow->ResetMouseMovement();
 				m_renderer->Update(FLOAT(ElapsedMicroseconds.QuadPart) / 1000000.0f);
 				m_renderer->Render();
+				
 			}
 
 		}
