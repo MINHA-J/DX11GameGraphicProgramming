@@ -44,7 +44,7 @@ namespace library
         ComPtr<ID3DBlob> pVSBlob(nullptr);
         Shader::compile(pVSBlob.GetAddressOf());
 
-        // Create the Direct3D Vertex Shader object
+        // Create Vertex Shader object
         hr = pDevice->CreateVertexShader(
             pVSBlob->GetBufferPointer(),
             pVSBlob->GetBufferSize(),
@@ -54,14 +54,32 @@ namespace library
         if (FAILED(hr))
             return hr;
     
-        // Define and create the input layout
+        // Define input layout
         D3D11_INPUT_ELEMENT_DESC layout[] =
         {
-            { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+            {
+            .SemanticName = "POSITION",
+            .SemanticIndex = 0u,
+            .Format = DXGI_FORMAT_R32G32B32_FLOAT, 
+            .InputSlot = 0u,
+            .AlignedByteOffset = 0u, 
+            .InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA, 
+            .InstanceDataStepRate = 0u
+            },
+            {
+            .SemanticName = "TEXCOORD",
+            .SemanticIndex = 0u,
+            .Format = DXGI_FORMAT_R32G32_FLOAT,
+            .InputSlot = 0u,
+            .AlignedByteOffset = 12u,
+            .InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA,
+            .InstanceDataStepRate = 0u
+            },
         };
 
         UINT numElements = ARRAYSIZE(layout);
 
+        // Create input layout
         hr = pDevice->CreateInputLayout(layout, numElements, pVSBlob->GetBufferPointer(),
             pVSBlob->GetBufferSize(), &m_vertexLayout);
  

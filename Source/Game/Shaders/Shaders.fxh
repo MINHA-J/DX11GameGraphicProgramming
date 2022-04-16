@@ -6,19 +6,43 @@
 //--------------------------------------------------------------------------------------
 
 //--------------------------------------------------------------------------------------
+// Global Variables
+//--------------------------------------------------------------------------------------
+Texture2D txDiffuse :register( t0 );
+SamplerState samLinear :register( s0 );
+
+
+//--------------------------------------------------------------------------------------
 // Constant Buffer Variables
 //--------------------------------------------------------------------------------------
 /*C+C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C
-  Cbuffer:  ConstantBuffer
-
-  Summary:  Constant buffer used for space transformations
+  Cbuffer:  cbChangeOnCameraMovement
+  Summary:  Constant buffer used for view transformation
 C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C-C*/
-cbuffer ConstantBuffer : register(b0)
+cbuffer cbChangeOnCameraMovement : register(b0)
 {
-	matrix World;
-	matrix View;
-	matrix Projection;
-}
+    matrix View;
+};
+
+
+/*C+C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C
+  Cbuffer:  cbChangeOnResize
+  Summary:  Constant buffer used for projection transformation
+C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C-C*/
+cbuffer cbChangeOnResize : register(b1)
+{
+    matrix Projection;
+};
+
+
+/*C+C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C
+  Cbuffer:  cbChangesEveryFrame
+  Summary:  Constant buffer used for world transformation
+C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C-C*/
+cbuffer cbChangesEveryFrame : register(b2)
+{
+    matrix World;
+};
 
 
 //--------------------------------------------------------------------------------------
@@ -29,7 +53,8 @@ cbuffer ConstantBuffer : register(b0)
 C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C-C*/
 struct VS_INPUT
 {
-    float4 Pos : POSITION;
+    float4 Position : POSITION;
+    float2 TexCoord : TEXCOORD0;
 };
 
 
@@ -41,7 +66,8 @@ struct VS_INPUT
 C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C-C*/
 struct PS_INPUT
 {
-    float4 Pos : SV_POSITION;  // interpolated vertex position (system value) 
+    float4 Position : SV_POSITION;  // interpolated vertex position (system value) 
+    float2 TexCoord : TEXCOORD0;
 };
 
 
@@ -51,17 +77,19 @@ struct PS_INPUT
 PS_INPUT VS( VS_INPUT input )
 {
     PS_INPUT output = (PS_INPUT)0;
-    output.Pos = mul( input.Pos, World );
-    output.Pos = mul( output.Pos, View );
-    output.Pos = mul( output.Pos, Projection );
+    output.Position = mul( input.Position, World );
+    output.Position = mul( output.Position, View );
+    output.Position = mul( output.Position, Projection );
     
+    output.TexCoord = input.TexCoord;
+
     return output;
 }
 
 //--------------------------------------------------------------------------------------
 // Pixel Shader
 //--------------------------------------------------------------------------------------
-float4 PS( PS_INPUT input ) : SV_Target
+float4 PS(PS_INPUT input): SV_Target
 {
-	return float4(1.0f, 0.0f, 0.0f, 1.0f);
+    return txDiffuse.Sample(samLinear, input.TexCoord);
 }

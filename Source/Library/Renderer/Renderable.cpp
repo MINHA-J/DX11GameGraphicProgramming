@@ -1,20 +1,39 @@
 #include "Renderer/Renderable.h"
+#include "Texture/DDSTextureLoader.h"
 
 namespace library
 {
     /*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
+      Method:   Renderable::Renderable
+      Summary:  Constructor
+      Args:     const std::filesystem::path& textureFilePath
+                  Path to the texture to use
+      Modifies: [m_vertexBuffer, m_indexBuffer, m_constantBuffer,
+                 m_textureRV, m_samplerLinear, m_vertexShader,
+                 m_pixelShader, m_textureFilePath, m_world].
+    M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
+    Renderable::Renderable(_In_ const std::filesystem::path& textureFilePath)
+        : m_vertexBuffer(nullptr)
+        , m_indexBuffer(nullptr)
+        , m_constantBuffer(nullptr)
+        , m_textureRV(nullptr)
+        , m_samplerLinear(nullptr)
+        , m_vertexShader(nullptr)
+        , m_pixelShader(nullptr)
+        , m_textureFilePath(textureFilePath)
+        , m_world(XMMatrixIdentity())
+    { }
+
+
+    /*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
       Method:   Renderable::initialize
-
-      Summary:  Initializes the buffers and the world matrix
-
+      Summary:  Initializes the buffers, texture, and the world matrix
       Args:     ID3D11Device* pDevice
                   The Direct3D device to create the buffers
                 ID3D11DeviceContext* pImmediateContext
                   The Direct3D context to set buffers
-
-      Modifies: [m_vertexBuffer, m_indexBuffer, m_constantBuffer, 
-                  m_world].
-
+      Modifies: [m_vertexBuffer, m_indexBuffer, m_constantBuffer,
+                 m_textureRV, m_samplerLinear, m_world].
       Returns:  HRESULT
                   Status code
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
@@ -22,10 +41,6 @@ namespace library
     { 
         HRESULT hr = S_OK;
         
-        /*m_vertexBuffer = new ComPtr<ID3D11Buffer>;
-        m_indexBuffer = new ComPtr<ID3D11Buffer>;
-        m_constantBuffer = new ComPtr<ID3D11Buffer>;*/
-
         // Create vertex buffer
         D3D11_BUFFER_DESC bufferDesc = {};
         bufferDesc.Usage = D3D11_USAGE_DEFAULT;
@@ -50,15 +65,38 @@ namespace library
             return hr;
 
         // Create the constant buffer
-        ConstantBuffer cb;
-
         bufferDesc.Usage = D3D11_USAGE_DEFAULT;
-        bufferDesc.ByteWidth = sizeof(ConstantBuffer);
+        bufferDesc.ByteWidth = sizeof(CBChangesEveryFrame);
         bufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
         bufferDesc.CPUAccessFlags = 0;
         bufferDesc.MiscFlags = 0;
         bufferDesc.StructureByteStride = 0;
-        hr = (pDevice->CreateBuffer(&bufferDesc, nullptr, m_constantBuffer.GetAddressOf()));
+        hr = pDevice->CreateBuffer(&bufferDesc, nullptr, m_constantBuffer.GetAddressOf());
+        if (FAILED(hr))
+            return hr;
+
+        // Load the Texture
+        // Create the texture resource device from .dds texture
+        hr = CreateDDSTextureFromFile(
+            pDevice, 
+            m_textureFilePath.filename().wstring().c_str(),
+            nullptr, 
+            m_textureRV.GetAddressOf());
+        if (FAILED(hr))
+            return hr;
+
+        // Create the sampler state
+        D3D11_SAMPLER_DESC sampDesc =
+        {
+            .Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR,
+            .AddressU = D3D11_TEXTURE_ADDRESS_WRAP,
+            .AddressV = D3D11_TEXTURE_ADDRESS_WRAP,
+            .AddressW = D3D11_TEXTURE_ADDRESS_WRAP,
+            .ComparisonFunc = D3D11_COMPARISON_NEVER,
+            .MinLOD = 0,
+            .MaxLOD = D3D11_FLOAT32_MAX
+        };
+        hr = pDevice->CreateSamplerState(&sampDesc, m_samplerLinear.GetAddressOf());
         if (FAILED(hr))
             return hr;
 
@@ -202,17 +240,41 @@ namespace library
 
 
     /*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
+      Method:   Renderable::GetTextureResourceView
+      Summary:  Returns the texture resource view
+      Returns:  ComPtr<ID3D11ShaderResourceView>&
+                  The texture resource view
+    M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
+    ComPtr<ID3D11ShaderResourceView>& Renderable::GetTextureResourceView()
+    {
+        return m_textureRV;
+    }
+
+
+    /*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
+      Method:   Renderable::GetSamplerState
+      Summary:  Returns the sampler state
+      Returns:  ComPtr<ID3D11SamplerState>&
+                  The sampler state
+    M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
+    ComPtr<ID3D11SamplerState>& Renderable::GetSamplerState()
+    {
+        return m_samplerLinear;
+    }
+
+
+    /*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
       Method:   Renderable::RotateX
       Summary:  Rotates around the x-axis
       Args:     FLOAT angle
                   Angle of rotation around the x-axis, in radians
       Modifies: [m_world].
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    void Renderable::RotateX(_In_ FLOAT angle)
-    {
-        //m_world *= x-axis rotation by angle matrix
-        m_world *= XMMatrixRotationX(angle);
-    }
+    //void Renderable::RotateX(_In_ FLOAT angle)
+    //{
+    //    //m_world *= x-axis rotation by angle matrix
+    //    m_world *= XMMatrixRotationX(angle);
+    //}
 
 
     /*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
@@ -222,11 +284,11 @@ namespace library
                   Angle of rotation around the y-axis, in radians
       Modifies: [m_world].
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    void Renderable::RotateY(_In_ FLOAT angle)
-    {
-        // m_world *= y-axis rotation by angle matrix
-        m_world *= XMMatrixRotationY(angle);
-    }
+    //void Renderable::RotateY(_In_ FLOAT angle)
+    //{
+    //    // m_world *= y-axis rotation by angle matrix
+    //    m_world *= XMMatrixRotationY(angle);
+    //}
 
 
     /*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
@@ -236,11 +298,11 @@ namespace library
                   Angle of rotation around the z-axis, in radians
       Modifies: [m_world].
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    void Renderable::RotateZ(_In_ FLOAT angle)
-    {
-        // m_world *= z-axis rotation by angle matrix
-        m_world *= XMMatrixRotationZ(angle);
-    }
+    //void Renderable::RotateZ(_In_ FLOAT angle)
+    //{
+    //    // m_world *= z-axis rotation by angle matrix
+    //    m_world *= XMMatrixRotationZ(angle);
+    //}
 
 
     /*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
@@ -254,11 +316,11 @@ namespace library
                   Angle of rotation around the z-axis, in radians
       Modifies: [m_world].
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    void Renderable::RotateRollPitchYaw(_In_ FLOAT pitch, _In_ FLOAT yaw, _In_ FLOAT roll)
-    {
-        // m_world *= x, y, z-axis rotation by pitch, yaw, roll matrix
-        m_world *= XMMatrixRotationRollPitchYaw(pitch, yaw, roll);
-    }
+    //void Renderable::RotateRollPitchYaw(_In_ FLOAT pitch, _In_ FLOAT yaw, _In_ FLOAT roll)
+    //{
+    //    // m_world *= x, y, z-axis rotation by pitch, yaw, roll matrix
+    //    m_world *= XMMatrixRotationRollPitchYaw(pitch, yaw, roll);
+    //}
 
 
     /*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
@@ -272,11 +334,11 @@ namespace library
                   Scaling factor along the z-axis.
       Modifies: [m_world].
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    void Renderable::Scale(_In_ FLOAT scaleX, _In_ FLOAT scaleY, _In_ FLOAT scaleZ)
-    {
-        // m_world *= x, y, z-axis scaling by scale factor matrix
-        m_world *= XMMatrixScaling(scaleX, scaleY, scaleZ);
-    }
+    //void Renderable::Scale(_In_ FLOAT scaleX, _In_ FLOAT scaleY, _In_ FLOAT scaleZ)
+    //{
+    //    // m_world *= x, y, z-axis scaling by scale factor matrix
+    //    m_world *= XMMatrixScaling(scaleX, scaleY, scaleZ);
+    //}
 
 
     /*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
@@ -286,11 +348,11 @@ namespace library
                   3D vector describing the translations along the x-axis, y-axis, and z-axis
       Modifies: [m_world].
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    void Renderable::Translate(_In_ const XMVECTOR& offset)
-    {
-        // m_world *= translate by offset vector matrix
-        m_world *= XMMatrixTranslationFromVector(offset);
-    }
+    //void Renderable::Translate(_In_ const XMVECTOR& offset)
+    //{
+    //    // m_world *= translate by offset vector matrix
+    //    m_world *= XMMatrixTranslationFromVector(offset);
+    //}
 
 
 }

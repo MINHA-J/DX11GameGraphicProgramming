@@ -24,11 +24,13 @@ namespace library
         , m_renderTargetView(nullptr)
         , m_depthStencil(nullptr)
         , m_depthStencilView(nullptr)
+        , m_cbChangeOnResize(nullptr)
+        , m_padding()
         , m_camera({ 0, 0, 0 ,0 })
-        , m_projection()
-        , m_renderables(std::unordered_map<PCWSTR, std::shared_ptr<Renderable>>())
-        , m_vertexShaders(std::unordered_map<PCWSTR, std::shared_ptr<VertexShader>>())
-        , m_pixelShaders(std::unordered_map<PCWSTR, std::shared_ptr<PixelShader>>())
+        , m_projection(XMMatrixIdentity())
+        , m_renderables(std::unordered_map<std::wstring, std::shared_ptr<Renderable>>())
+        , m_vertexShaders(std::unordered_map<std::wstring, std::shared_ptr<VertexShader>>())
+        , m_pixelShaders(std::unordered_map<std::wstring, std::shared_ptr<PixelShader>>())
     { }
 
 
@@ -179,17 +181,7 @@ namespace library
         if (FAILED(hr))
             return hr;
 
-        m_immediateContext->OMSetRenderTargets(1, m_renderTargetView.GetAddressOf(), nullptr);
-
-        // Setup the viewport
-        D3D11_VIEWPORT vp;
-        vp.Width = (FLOAT)width;
-        vp.Height = (FLOAT)height;
-        vp.MinDepth = 0.0f;
-        vp.MaxDepth = 1.0f;
-        vp.TopLeftX = 0;
-        vp.TopLeftY = 0;
-        m_immediateContext->RSSetViewports(1, &vp);
+        // m_immediateContext->OMSetRenderTargets(1, m_renderTargetView.GetAddressOf(), nullptr);
 
         // Create depth stencil texture
         D3D11_TEXTURE2D_DESC descDepth =
@@ -207,7 +199,6 @@ namespace library
             .CPUAccessFlags = 0,
             .MiscFlags = 0
         };
-
         hr = m_d3dDevice->CreateTexture2D(&descDepth, NULL, m_depthStencil.GetAddressOf());
         if (FAILED(hr))
             return hr;
@@ -217,14 +208,8 @@ namespace library
         {
             .Format = descDepth.Format,
             .ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D,
-            .Texture2D = {
-                .MipSlice = 0 }
+            .Texture2D = {.MipSlice = 0}
         };
-
-        descDSV.Format = descDepth.Format;
-        descDSV.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
-        descDSV.Texture2D.MipSlice = 0;
-
         hr = m_d3dDevice->CreateDepthStencilView(
             m_depthStencil.Get(), 
             &descDSV, 
@@ -237,28 +222,21 @@ namespace library
             m_renderTargetView.GetAddressOf(), 
             m_depthStencilView.Get());
 
+        // Setup the viewport
+        D3D11_VIEWPORT vp;
+        vp.Width = (FLOAT)width;
+        vp.Height = (FLOAT)height;
+        vp.MinDepth = 0.0f;
+        vp.MaxDepth = 1.0f;
+        vp.TopLeftX = 0;
+        vp.TopLeftY = 0;
+        m_immediateContext->RSSetViewports(1, &vp);
 
-        // Initialize the view matrix
-        //XMVECTOR Eye = XMVectorSet(0.0f, 1.0f, -5.0f, 0.0f);
-        //XMVECTOR At = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
-        //XMVECTOR Up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
-        //m_camera = XMMatrixLookAtLH(Eye, At, Up);
-        // XMMATRIX viewmatrix = m_camera.GetView();
-        
 
-        // Initialize the projection matrix
-        m_projection = XMMatrixPerspectiveFovLH(
-            XM_PIDIV2, 
-            static_cast<FLOAT>(width) / static_cast<FLOAT>(height), 
-            0.01f, 
-            100.0f);
-
-        // Initializing Objects
-        // Initialize the shaders, then the renderables
+        // Initializing Objects(shaders, then the renderables)
         for (auto VS : m_vertexShaders)
         {
-            // Compile a vertex shader
-            // Create the Direct3D Vertex Shader object
+            // Compile and Create a vertex shader
             // Define and create the input layout
             VS.second->Initialize(m_d3dDevice.Get());
             
@@ -268,8 +246,7 @@ namespace library
         
         for (auto PS : m_pixelShaders)
         {
-            // Compile a pixel shader
-            // Create the Direct3D Pixel Shader object
+            // Compile and Create a pixel shader
             PS.second->Initialize(m_d3dDevice.Get());
         }
 
@@ -281,6 +258,32 @@ namespace library
             // Initialize the world matrix
             renderables.second->Initialize(m_d3dDevice.Get(), m_immediateContext.Get());
         }
+
+        // Create the constant buffers
+        D3D11_BUFFER_DESC bufferDesc = {};
+        bufferDesc.Usage = D3D11_USAGE_DEFAULT;
+        bufferDesc.ByteWidth = sizeof(CBChangeOnResize);
+        bufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+        bufferDesc.CPUAccessFlags = 0;
+        bufferDesc.MiscFlags = 0;
+        bufferDesc.StructureByteStride = 0;
+
+        hr = m_d3dDevice->CreateBuffer(&bufferDesc, nullptr, m_cbChangeOnResize.GetAddressOf());
+        if (FAILED(hr))
+            return hr;
+
+        // Initialize the projection matrix
+        m_projection = XMMatrixPerspectiveFovLH(
+            XM_PIDIV2,
+            static_cast<FLOAT>(width) / static_cast<FLOAT>(height),
+            0.01f,
+            100.0f);
+
+        CBChangeOnResize cbResize
+        {
+            .Projection = XMMatrixTranspose(m_projection)
+        };
+        m_immediateContext->UpdateSubresource(m_cbChangeOnResize.Get(), 0u, nullptr, &cbResize, 0u, 0u);
 
         // Set primitive topology
         m_immediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -415,7 +418,6 @@ namespace library
     { 
         for (auto renderables : m_renderables)
         {
-            std::shared_ptr<library::Renderable> render = renderables.second;
             renderables.second->Update(deltaTime);
         }
     }
@@ -434,10 +436,22 @@ namespace library
         // Clear the back buffer
         m_immediateContext->ClearRenderTargetView(m_renderTargetView.Get(), Colors::MidnightBlue);
 
+
         // Clear the depth buffer to 1.0 (maximum depth)
         m_immediateContext->ClearDepthStencilView(m_depthStencilView.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
 
-        // For each renderables
+
+        // Create camera constant buffer and update
+        m_camera.Initialize(m_d3dDevice.Get());
+
+        CBChangeOnCameraMovement cbCamera
+        {
+            .View = XMMatrixTranspose(m_camera.GetView())
+        };
+        m_immediateContext->UpdateSubresource(m_camera.GetConstantBuffer().Get(), 0u, nullptr, &cbCamera, 0u, 0u);
+
+
+        // Update variables that change once per frame
         for (auto elem : m_renderables)
         {
             // Set the vertex buffer, index buffer, and the input layout
@@ -445,25 +459,25 @@ namespace library
             m_immediateContext->IASetIndexBuffer(elem.second->GetIndexBuffer().Get(), DXGI_FORMAT_R16_UINT, 0);
             m_immediateContext->IASetInputLayout(elem.second->GetVertexLayout().Get());
 
-            // Update constant buffer
-            ConstantBuffer cb;
-            cb.World = XMMatrixTranspose(elem.second->GetWorldMatrix());
-            cb.View = XMMatrixTranspose(m_camera.GetView());
-            cb.Projection = XMMatrixTranspose(m_projection);
-            m_immediateContext->UpdateSubresource(
-                elem.second->GetConstantBuffer().Get(),
-                0u,
-                nullptr,
-                &cb,
-                0u,
-                0u 
-            );
+            // Create renderable constant buffer and update
+            CBChangesEveryFrame cbFrame =
+            {
+                .World = XMMatrixTranspose(elem.second->GetWorldMatrix())
+            };
+            m_immediateContext->UpdateSubresource(elem.second->GetConstantBuffer().Get(), 0u, nullptr, &cbFrame, 0u, 0u );
 
-            // Set up the vertex / pixel shader stage.
-            // Render the triangles
+            // Set Shaders and constant buffers, shader resources, and samplers
             m_immediateContext->VSSetShader(elem.second->GetVertexShader().Get(), nullptr, 0u);
-            m_immediateContext->VSSetConstantBuffers(0, 1, elem.second->GetConstantBuffer().GetAddressOf());
+            m_immediateContext->VSSetConstantBuffers(0u, 1u, m_camera.GetConstantBuffer().GetAddressOf());
+            m_immediateContext->VSSetConstantBuffers(1u, 1u, m_cbChangeOnResize.GetAddressOf());
+            m_immediateContext->VSSetConstantBuffers(2u, 1u, elem.second->GetConstantBuffer().GetAddressOf());
+
             m_immediateContext->PSSetShader(elem.second->GetPixelShader().Get(), nullptr, 0u);
+
+            // m_immediateContext->PSSetConstantBuffers(0u, 1u, m_camera.GetConstantBuffer().GetAddressOf());
+            m_immediateContext->PSSetConstantBuffers(2u, 1u, elem.second->GetConstantBuffer().GetAddressOf());
+            m_immediateContext->PSSetShaderResources(0u, 1u, elem.second->GetTextureResourceView().GetAddressOf());
+            m_immediateContext->PSSetSamplers(0u, 1u, elem.second->GetSamplerState().GetAddressOf());
 
             // Calling Draw tells Direct3D to start sending commands to the graphics device.
             m_immediateContext->DrawIndexed(elem.second->GetNumIndices(), 0, 0);

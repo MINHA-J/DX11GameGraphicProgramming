@@ -70,4 +70,9 @@
       <Filter>Header Files\Cube</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <Image Include="seafloor.dds">
+      <Filter>Source Files</Filter>
+    </Image>
+  </ItemGroup>
 </Project>

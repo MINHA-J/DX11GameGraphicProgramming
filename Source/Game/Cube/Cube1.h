@@ -10,7 +10,7 @@
 class Cube1 : public BaseCube
 {
 public:
-	Cube1() = default;
+	Cube1(const std::filesystem::path& textureFilePath);
 	~Cube1() = default;
 
 	virtual void Update(_In_ FLOAT deltaTime) override;

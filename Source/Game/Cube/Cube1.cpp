@@ -1,5 +1,9 @@
 #include "Cube/Cube1.h"
 
+Cube1::Cube1(const std::filesystem::path& textureFilePath)
+	: BaseCube(textureFilePath)
+{ }
+
 void Cube1::Update(_In_ FLOAT deltaTime)
 {
 	m_world *= XMMatrixRotationY(deltaTime);

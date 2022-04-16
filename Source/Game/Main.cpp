@@ -11,8 +11,10 @@
 
 #include "Common.h"
 
+#include <cstdio>
+#include <filesystem>
 #include <memory>
-
+#include <source_location>
 
 #include "Game/Game.h"
 #include "Cube/Cube1.h"
@@ -50,7 +52,7 @@ INT WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
     UNREFERENCED_PARAMETER(hPrevInstance);
     UNREFERENCED_PARAMETER(lpCmdLine);
 
-    std::unique_ptr<library::Game> game = std::make_unique<library::Game>(L"Game Graphics Programming Lab 04: 3D Spaces and Transformations");
+    std::unique_ptr<library::Game> game = std::make_unique<library::Game>(L"Game Graphics Programming Lab 05: Texture Mapping and Constant Buffers");
 
     std::shared_ptr<library::VertexShader> vertexShader = std::make_shared<library::VertexShader>(L"Shaders/Shaders.fxh", "VS", "vs_5_0");
     if (FAILED(game->GetRenderer()->AddVertexShader(L"MainShader", vertexShader)))
@@ -65,7 +67,7 @@ INT WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
     }
 
     // 첫번째 Cube
-    std::shared_ptr<Cube1> BigCube = std::make_shared<Cube1>();
+    std::shared_ptr<Cube1> BigCube = std::make_shared<Cube1>("seafloor.dds");
     if (FAILED(game->GetRenderer()->AddRenderable(L"Cube1", BigCube)))
     {
         return 0;
@@ -80,7 +82,7 @@ INT WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
         return hr;
 
     // 두번째 Cube
-    std::shared_ptr<Cube2> SmallCube = std::make_shared<Cube2>();
+    std::shared_ptr<Cube2> SmallCube = std::make_shared<Cube2>("carpet.dds");
     if (FAILED(game->GetRenderer()->AddRenderable(L"Cube2", SmallCube)))
     {
         return 0;
@@ -93,17 +95,17 @@ INT WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
         return hr;
 
     // my Cube
-    std::shared_ptr<minCube> my = std::make_shared<minCube>();
-    if (FAILED(game->GetRenderer()->AddRenderable(L"Cube3", my)))
-    {
-        return 0;
-    }
-    hr = game->GetRenderer()->SetVertexShaderOfRenderable(L"Cube3", L"MainShader");
-    if (FAILED(hr))
-        return hr;
-    hr = game->GetRenderer()->SetPixelShaderOfRenderable(L"Cube3", L"MainShader");
-    if (FAILED(hr))
-        return hr;
+    //std::shared_ptr<minCube> my = std::make_shared<minCube>(L"seafloor.dds");
+    //if (FAILED(game->GetRenderer()->AddRenderable(L"Cube3", my)))
+    //{
+    //    return 0;
+    //}
+    //hr = game->GetRenderer()->SetVertexShaderOfRenderable(L"Cube3", L"MainShader");
+    //if (FAILED(hr))
+    //    return hr;
+    //hr = game->GetRenderer()->SetPixelShaderOfRenderable(L"Cube3", L"MainShader");
+    //if (FAILED(hr))
+    //    return hr;
 
 
     if (FAILED(game->Initialize(hInstance, nCmdShow)))

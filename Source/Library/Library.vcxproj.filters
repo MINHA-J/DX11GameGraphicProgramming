@@ -43,6 +43,12 @@
     <Filter Include="Header Files\Camera">
       <UniqueIdentifier>{b7669aab-17b8-4271-b713-9d5300dca872}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Texture">
+      <UniqueIdentifier>{58d30e62-6ae2-404b-a44e-90a400fe2003}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Texture">
+      <UniqueIdentifier>{af21feb3-5a1a-4460-8a64-926a28797a49}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common.h">
@@ -81,6 +87,9 @@
     <ClInclude Include="Camera\Camera.h">
       <Filter>Header Files\Camera</Filter>
     </ClInclude>
+    <ClInclude Include="Texture\DDSTextureLoader.h">
+      <Filter>Header Files\Texture</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Game\Game.cpp">
@@ -106,6 +115,9 @@
     </ClCompile>
     <ClCompile Include="Camera\Camera.cpp">
       <Filter>Source Files\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture\DDSTextureLoader.cpp">
+      <Filter>Source Files\Texture</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
