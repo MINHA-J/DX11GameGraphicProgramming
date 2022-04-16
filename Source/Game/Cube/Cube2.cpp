@@ -1,7 +1,8 @@
 #include "Cube/Cube2.h"
 
 Cube2::Cube2(const std::filesystem::path& textureFilePath)
-    : BaseCube(textureFilePath)
+    : BaseCube(textureFilePath),
+    cubeTime(0.0f)
 { }
 
 void Cube2::Update(_In_ FLOAT deltaTime)

@@ -16,5 +16,5 @@ public:
 	virtual void Update(_In_ FLOAT deltaTime) override;
 
 private:
-	FLOAT cubeTime = 0;
+	FLOAT cubeTime;
 };
