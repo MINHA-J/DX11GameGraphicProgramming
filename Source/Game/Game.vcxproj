@@ -180,23 +180,23 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Cube\BaseCube.cpp" />
-    <ClCompile Include="Cube\Cube1.cpp" />
-    <ClCompile Include="Cube\Cube2.cpp" />
-    <ClCompile Include="Cube\minCube.cpp" />
+    <ClCompile Include="Cube\Cube.cpp" />
+    <ClCompile Include="Cube\RotatingCube.cpp" />
+    <ClCompile Include="Light\RotatingPointLight.cpp" />
     <ClCompile Include="Main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Cube\BaseCube.h" />
-    <ClInclude Include="Cube\Cube1.h" />
-    <ClInclude Include="Cube\Cube2.h" />
-    <ClInclude Include="Cube\minCube.h" />
+    <ClInclude Include="Cube\Cube.h" />
+    <ClInclude Include="Cube\RotatingCube.h" />
+    <ClInclude Include="Light\RotatingPointLight.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shaders\PS.hlsl" />
     <FxCompile Include="Shaders\VS.hlsl" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Shaders\Shaders.fxh" />
+    <None Include="Shaders\PhongShaders.fxh" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="seafloor.dds" />

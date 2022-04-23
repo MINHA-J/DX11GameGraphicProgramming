@@ -4,14 +4,17 @@ namespace library
 {
     /*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
       Method:   Renderer::Renderer
-
       Summary:  Constructor
-
       Modifies: [m_driverType, m_featureLevel, m_d3dDevice, m_d3dDevice1,
-                  m_immediateContext, m_immediateContext1, m_swapChain,
-                  m_swapChain1, m_renderTargetView, m_vertexShader,
-                  m_pixelShader, m_vertexLayout, m_vertexBuffer].
+                 m_immediateContext, m_immediateContext1, m_swapChain,
+                 m_swapChain1, m_renderTargetView, m_depthStencil,
+                 m_depthStencilView, m_cbChangeOnResize, m_camera,
+                 m_projection, m_renderables, m_vertexShaders,
+                 m_pixelShaders].
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
+    /*--------------------------------------------------------------------
+      TODO: Renderer::Renderer definition (remove the comment)
+    --------------------------------------------------------------------*/
     Renderer::Renderer()
         : m_driverType(D3D_DRIVER_TYPE_NULL)
         , m_featureLevel(D3D_FEATURE_LEVEL_11_0)
@@ -25,31 +28,32 @@ namespace library
         , m_depthStencil(nullptr)
         , m_depthStencilView(nullptr)
         , m_cbChangeOnResize(nullptr)
-        , m_padding()
+        , m_cbLights(nullptr)
         , m_camera({ 0, 0, 0 ,0 })
         , m_projection(XMMatrixIdentity())
         , m_renderables(std::unordered_map<std::wstring, std::shared_ptr<Renderable>>())
+        , m_aPointLights()
         , m_vertexShaders(std::unordered_map<std::wstring, std::shared_ptr<VertexShader>>())
         , m_pixelShaders(std::unordered_map<std::wstring, std::shared_ptr<PixelShader>>())
     { }
 
 
     /*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
-     Method:   Renderer::Initialize
-
-     Summary:  Creates Direct3D device and swap chain
-
-     Args:     HWND hWnd
-                 Handle to the window
-
-     Modifies: [m_d3dDevice, m_featureLevel, m_immediateContext,
+      Method:   Renderer::Initialize
+      Summary:  Creates Direct3D device and swap chain
+      Args:     HWND hWnd
+                  Handle to the window
+      Modifies: [m_d3dDevice, m_featureLevel, m_immediateContext,
                  m_d3dDevice1, m_immediateContext1, m_swapChain1,
-                 m_swapChain, m_renderTargetView, m_vertexShader,
-                 m_vertexLayout, m_pixelShader, m_vertexBuffer].
-
-     Returns:  HRESULT
-                 Status code
-   M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
+                 m_swapChain, m_renderTargetView, m_cbChangeOnResize,
+                 m_projection, m_cbLights, m_camera, m_vertexShaders,
+                 m_pixelShaders, m_renderables].
+      Returns:  HRESULT
+                  Status code
+    M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
+    /*--------------------------------------------------------------------
+      TODO: Renderer::Initialize definition (remove the comment)
+    --------------------------------------------------------------------*/
     HRESULT Renderer::Initialize(_In_ HWND hWnd)
     {
         HRESULT hr = S_OK;
@@ -323,6 +327,36 @@ namespace library
 
 
     /*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
+      Method:   Renderer::AddPointLight
+      Summary:  Add a point light
+      Args:     size_t index
+                  Index of the point light
+                const std::shared_ptr<PointLight>& pointLight
+                  Shared pointer to the point light object
+      Modifies: [m_aPointLights].
+      Returns:  HRESULT
+                  Status code.
+    M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
+    /*--------------------------------------------------------------------
+      TODO: Renderer::AddPointLight definition (remove the comment)
+    --------------------------------------------------------------------*/
+    HRESULT Renderer::AddPointLight(_In_ size_t index, _In_ const std::shared_ptr<PointLight>& pPointLight)
+    {
+        // When the index exceeds the size of possible lights, it returns E_FAIL
+        // else, add the light to designated index
+        if (index > NUM_LIGHTS)
+        {
+            return E_FAIL;
+        }
+        else
+        {
+            // TODO ? 이렇게 더해도 되나 ?
+            m_aPointLights[index] = pPointLight;
+        }
+    }
+
+
+    /*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
       Method:   Renderer::AddVertexShader
 
       Summary:  Add the vertex shader into the renderer
@@ -380,6 +414,35 @@ namespace library
             return S_OK;
         }
     }
+
+
+    /*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
+      Method:   Renderer::AddScene
+      Summary:  Add a scene
+      Args:     PCWSTR pszSceneName
+                  Key of a scene
+                const std::filesystem::path& sceneFilePath
+                  File path to initialize a scene
+      Modifies: [m_scenes].
+      Returns:  HRESULT
+                  Status code
+    M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
+    /*--------------------------------------------------------------------
+      TODO: Renderer::AddScene definition (remove the comment)
+    --------------------------------------------------------------------*/
+
+    /*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
+      Method:   Renderer::SetMainScene
+      Summary:  Set the main scene
+      Args:     PCWSTR pszSceneName
+                  Name of the scene to set as the main scene
+      Modifies: [m_pszMainSceneName].
+      Returns:  HRESULT
+                  Status code
+    M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
+    /*--------------------------------------------------------------------
+      TODO: Renderer::SetMainScene definition (remove the comment)
+    --------------------------------------------------------------------*/
 
 
     /*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
@@ -446,10 +509,21 @@ namespace library
 
         CBChangeOnCameraMovement cbCamera
         {
-            .View = XMMatrixTranspose(m_camera.GetView())
+            .View = XMMatrixTranspose(m_camera.GetView()),
+            .CameraPosition = {0,0,0,0} // TODO ? 이거 맞나 ?
         };
         m_immediateContext->UpdateSubresource(m_camera.GetConstantBuffer().Get(), 0u, nullptr, &cbCamera, 0u, 0u);
 
+        // Create lights constant buffer and update
+        for (int i = 0; i < NUM_LIGHTS; i++)
+        {
+            CBLights cbLight
+            {
+                .LightPositions = m_aPointLights[i].get()->GetPosition(),
+                .LightColors = m_aPointLights[i].get()->GetColor()
+            };
+            m_immediateContext->UpdateSubresource(m_cbLights.Get(), 0u, nullptr, &cbLight, 0u, 0u);
+        }
 
         // Update variables that change once per frame
         for (auto elem : m_renderables)
@@ -462,7 +536,8 @@ namespace library
             // Create renderable constant buffer and update
             CBChangesEveryFrame cbFrame =
             {
-                .World = XMMatrixTranspose(elem.second->GetWorldMatrix())
+                .World = XMMatrixTranspose(elem.second->GetWorldMatrix()),
+                .OutputColor = elem.second->GetOutputColor()
             };
             m_immediateContext->UpdateSubresource(elem.second->GetConstantBuffer().Get(), 0u, nullptr, &cbFrame, 0u, 0u );
 
@@ -471,16 +546,20 @@ namespace library
             m_immediateContext->VSSetConstantBuffers(0u, 1u, m_camera.GetConstantBuffer().GetAddressOf());
             m_immediateContext->VSSetConstantBuffers(1u, 1u, m_cbChangeOnResize.GetAddressOf());
             m_immediateContext->VSSetConstantBuffers(2u, 1u, elem.second->GetConstantBuffer().GetAddressOf());
+            m_immediateContext->VSSetConstantBuffers(3u, 1u, m_cbLights.GetAddressOf()); // TODO 이거 맞나?
 
             m_immediateContext->PSSetShader(elem.second->GetPixelShader().Get(), nullptr, 0u);
 
-            // m_immediateContext->PSSetConstantBuffers(0u, 1u, m_camera.GetConstantBuffer().GetAddressOf());
             m_immediateContext->PSSetConstantBuffers(2u, 1u, elem.second->GetConstantBuffer().GetAddressOf());
-            m_immediateContext->PSSetShaderResources(0u, 1u, elem.second->GetTextureResourceView().GetAddressOf());
-            m_immediateContext->PSSetSamplers(0u, 1u, elem.second->GetSamplerState().GetAddressOf());
+            if (elem.second->HasTexture())
+            {
+                m_immediateContext->PSSetShaderResources(0u, 1u, elem.second->GetTextureResourceView().GetAddressOf());
+                m_immediateContext->PSSetSamplers(0u, 1u, elem.second->GetSamplerState().GetAddressOf());
+            }
 
             // Calling Draw tells Direct3D to start sending commands to the graphics device.
             m_immediateContext->DrawIndexed(elem.second->GetNumIndices(), 0, 0);
+
         }
 
         // Present our back buffer to our front buffer

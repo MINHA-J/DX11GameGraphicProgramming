@@ -58,23 +58,32 @@ namespace library
         D3D11_INPUT_ELEMENT_DESC layout[] =
         {
             {
-            .SemanticName = "POSITION",
-            .SemanticIndex = 0u,
-            .Format = DXGI_FORMAT_R32G32B32_FLOAT, 
-            .InputSlot = 0u,
-            .AlignedByteOffset = 0u, 
-            .InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA, 
-            .InstanceDataStepRate = 0u
+                .SemanticName = "POSITION",
+                .SemanticIndex = 0u,
+                .Format = DXGI_FORMAT_R32G32B32_FLOAT, 
+                .InputSlot = 0u,
+                .AlignedByteOffset = 0u, 
+                .InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA, 
+                .InstanceDataStepRate = 0u
             },
             {
-            .SemanticName = "TEXCOORD",
-            .SemanticIndex = 0u,
-            .Format = DXGI_FORMAT_R32G32_FLOAT,
-            .InputSlot = 0u,
-            .AlignedByteOffset = 12u,
-            .InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA,
-            .InstanceDataStepRate = 0u
+                .SemanticName = "TEXCOORD",
+                .SemanticIndex = 0u,
+                .Format = DXGI_FORMAT_R32G32_FLOAT,
+                .InputSlot = 0u,
+                .AlignedByteOffset = 12u,
+                .InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA,
+                .InstanceDataStepRate = 0u
             },
+            {
+                .SemanticName = "NORMAL",
+                .SemanticIndex = 0u,
+                .Format = DXGI_FORMAT_R32G32B32_FLOAT,
+                .InputSlot = 0u,
+                .AlignedByteOffset = 12u,
+                .InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA,
+                .InstanceDataStepRate = 0u
+            }
         };
 
         UINT numElements = ARRAYSIZE(layout);
