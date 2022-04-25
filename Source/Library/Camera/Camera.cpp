@@ -19,7 +19,7 @@ namespace library
         , m_moveLeftRight(0.0f)
         , m_moveBackForward(0.0f)
         , m_moveUpDown(0.0f)
-        , m_travelSpeed(4.0f)
+        , m_travelSpeed(8.0f)
         , m_rotationSpeed(4.0f)
         , m_padding()
         , m_cameraForward(DEFAULT_FORWARD)
@@ -28,7 +28,7 @@ namespace library
         , m_eye(XMVectorSet(0.0f, 1.0f, -5.0f, 0.0f))
         , m_at(XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f))
         , m_up(XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f))
-        , m_rotation()
+        , m_rotation(XMMatrixIdentity())
         , m_view(XMMatrixIdentity())
     { 
     }
@@ -142,8 +142,6 @@ namespace library
             m_moveUpDown += deltaTime * m_travelSpeed;
         if (directions.bDown)
             m_moveUpDown += deltaTime * m_travelSpeed * -1.0;
-
-        Update(deltaTime);
     }
 
 
@@ -196,7 +194,7 @@ namespace library
         m_cameraForward = XMVector3TransformCoord(DEFAULT_FORWARD, RotateYTempMatrix);
         m_cameraRight = XMVector3TransformCoord(DEFAULT_RIGHT, RotateYTempMatrix);
         m_cameraUp = XMVector3TransformCoord(m_cameraUp, RotateYTempMatrix);
-        
+
         // Moving the Camera
         m_eye += m_moveLeftRight * m_cameraRight;
         m_eye += m_moveBackForward * m_cameraForward;
@@ -209,7 +207,7 @@ namespace library
 
         // determine the view matrix
         m_at = m_eye + m_at;
-        
+
         // Set the camView Matrix
         m_view = XMMatrixLookAtLH(m_eye, m_at, m_up);
     }

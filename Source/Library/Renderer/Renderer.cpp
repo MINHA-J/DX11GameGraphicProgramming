@@ -12,9 +12,6 @@ namespace library
                  m_projection, m_renderables, m_vertexShaders,
                  m_pixelShaders].
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    /*--------------------------------------------------------------------
-      TODO: Renderer::Renderer definition (remove the comment)
-    --------------------------------------------------------------------*/
     Renderer::Renderer()
         : m_driverType(D3D_DRIVER_TYPE_NULL)
         , m_featureLevel(D3D_FEATURE_LEVEL_11_0)
@@ -51,9 +48,6 @@ namespace library
       Returns:  HRESULT
                   Status code
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    /*--------------------------------------------------------------------
-      TODO: Renderer::Initialize definition (remove the comment)
-    --------------------------------------------------------------------*/
     HRESULT Renderer::Initialize(_In_ HWND hWnd)
     {
         HRESULT hr = S_OK;
@@ -185,8 +179,6 @@ namespace library
         if (FAILED(hr))
             return hr;
 
-        // m_immediateContext->OMSetRenderTargets(1, m_renderTargetView.GetAddressOf(), nullptr);
-
         // Create depth stencil texture
         D3D11_TEXTURE2D_DESC descDepth =
         {
@@ -276,6 +268,10 @@ namespace library
         if (FAILED(hr))
             return hr;
 
+        // Create lights constant buffer
+        bufferDesc.ByteWidth = sizeof(CBLights);
+        hr = m_d3dDevice->CreateBuffer(&bufferDesc, nullptr, m_cbLights.GetAddressOf());
+
         // Initialize the projection matrix
         m_projection = XMMatrixPerspectiveFovLH(
             XM_PIDIV2,
@@ -337,9 +333,6 @@ namespace library
       Returns:  HRESULT
                   Status code.
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    /*--------------------------------------------------------------------
-      TODO: Renderer::AddPointLight definition (remove the comment)
-    --------------------------------------------------------------------*/
     HRESULT Renderer::AddPointLight(_In_ size_t index, _In_ const std::shared_ptr<PointLight>& pPointLight)
     {
         // When the index exceeds the size of possible lights, it returns E_FAIL
@@ -350,8 +343,8 @@ namespace library
         }
         else
         {
-            // TODO ? 이렇게 더해도 되나 ?
             m_aPointLights[index] = pPointLight;
+            return S_OK;
         }
     }
 
@@ -417,35 +410,6 @@ namespace library
 
 
     /*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
-      Method:   Renderer::AddScene
-      Summary:  Add a scene
-      Args:     PCWSTR pszSceneName
-                  Key of a scene
-                const std::filesystem::path& sceneFilePath
-                  File path to initialize a scene
-      Modifies: [m_scenes].
-      Returns:  HRESULT
-                  Status code
-    M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    /*--------------------------------------------------------------------
-      TODO: Renderer::AddScene definition (remove the comment)
-    --------------------------------------------------------------------*/
-
-    /*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
-      Method:   Renderer::SetMainScene
-      Summary:  Set the main scene
-      Args:     PCWSTR pszSceneName
-                  Name of the scene to set as the main scene
-      Modifies: [m_pszMainSceneName].
-      Returns:  HRESULT
-                  Status code
-    M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    /*--------------------------------------------------------------------
-      TODO: Renderer::SetMainScene definition (remove the comment)
-    --------------------------------------------------------------------*/
-
-
-    /*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
       Method:   Renderer::HandleInput
       Summary:  Add the pixel shader into the renderer and initialize it
       Args:     const DirectionsInput& directions
@@ -478,11 +442,20 @@ namespace library
                   Time difference of a frame
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
     void Renderer::Update(_In_ FLOAT deltaTime)
-    { 
+    {         
+        for (auto point_light : m_aPointLights)
+        {
+            point_light->Update(deltaTime);
+        }
+
+        // update renderable
         for (auto renderables : m_renderables)
         {
             renderables.second->Update(deltaTime);
         }
+
+        // update camera
+        m_camera.Update(deltaTime);
     }
 
 
@@ -510,20 +483,18 @@ namespace library
         CBChangeOnCameraMovement cbCamera
         {
             .View = XMMatrixTranspose(m_camera.GetView()),
-            .CameraPosition = {0,0,0,0} // TODO ? 이거 맞나 ?
+            .CameraPosition = {XMVectorGetX(m_camera.GetEye()), XMVectorGetY(m_camera.GetEye()), XMVectorGetZ(m_camera.GetEye()) , XMVectorGetW(m_camera.GetEye())}
         };
         m_immediateContext->UpdateSubresource(m_camera.GetConstantBuffer().Get(), 0u, nullptr, &cbCamera, 0u, 0u);
 
-        // Create lights constant buffer and update
-        for (int i = 0; i < NUM_LIGHTS; i++)
+        CBLights cbLight = {};
+        // update lights constant buffer
+        for (int i = 0u; i < NUM_LIGHTS; ++i)
         {
-            CBLights cbLight
-            {
-                .LightPositions = m_aPointLights[i].get()->GetPosition(),
-                .LightColors = m_aPointLights[i].get()->GetColor()
-            };
-            m_immediateContext->UpdateSubresource(m_cbLights.Get(), 0u, nullptr, &cbLight, 0u, 0u);
+            cbLight.LightPositions[i] = m_aPointLights[i]->GetPosition();
+            cbLight.LightColors[i] = m_aPointLights[i]->GetColor();
         }
+        m_immediateContext->UpdateSubresource(m_cbLights.Get(), 0u, nullptr, &cbLight, 0u, 0u);
 
         // Update variables that change once per frame
         for (auto elem : m_renderables)
@@ -542,15 +513,19 @@ namespace library
             m_immediateContext->UpdateSubresource(elem.second->GetConstantBuffer().Get(), 0u, nullptr, &cbFrame, 0u, 0u );
 
             // Set Shaders and constant buffers, shader resources, and samplers
+            // Set the constant buffer to each shaders accordingly
             m_immediateContext->VSSetShader(elem.second->GetVertexShader().Get(), nullptr, 0u);
             m_immediateContext->VSSetConstantBuffers(0u, 1u, m_camera.GetConstantBuffer().GetAddressOf());
             m_immediateContext->VSSetConstantBuffers(1u, 1u, m_cbChangeOnResize.GetAddressOf());
             m_immediateContext->VSSetConstantBuffers(2u, 1u, elem.second->GetConstantBuffer().GetAddressOf());
-            m_immediateContext->VSSetConstantBuffers(3u, 1u, m_cbLights.GetAddressOf()); // TODO 이거 맞나?
+            m_immediateContext->VSSetConstantBuffers(3u, 1u, m_cbLights.GetAddressOf());
 
             m_immediateContext->PSSetShader(elem.second->GetPixelShader().Get(), nullptr, 0u);
 
+            m_immediateContext->PSSetConstantBuffers(0u, 1u, m_camera.GetConstantBuffer().GetAddressOf());
             m_immediateContext->PSSetConstantBuffers(2u, 1u, elem.second->GetConstantBuffer().GetAddressOf());
+            m_immediateContext->PSSetConstantBuffers(3u, 1u, m_cbLights.GetAddressOf());            
+
             if (elem.second->HasTexture())
             {
                 m_immediateContext->PSSetShaderResources(0u, 1u, elem.second->GetTextureResourceView().GetAddressOf());

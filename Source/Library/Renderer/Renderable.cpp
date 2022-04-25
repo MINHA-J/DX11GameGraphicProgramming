@@ -12,9 +12,6 @@ namespace library
                  m_textureRV, m_samplerLinear, m_vertexShader,
                  m_pixelShader, m_textureFilePath, m_world].
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    /*--------------------------------------------------------------------
-      TODO: Renderable::Renderable definition (remove the comment)
-    --------------------------------------------------------------------*/
     Renderable::Renderable(_In_ const std::filesystem::path& textureFilePath)
         : m_vertexBuffer(nullptr)
         , m_indexBuffer(nullptr)
@@ -40,9 +37,6 @@ namespace library
                  m_pixelShader, m_textureFilePath, m_outputColor,
                  m_world].
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    /*--------------------------------------------------------------------
-      TODO: Renderable::Renderable definition (remove the comment)
-    --------------------------------------------------------------------*/
     Renderable::Renderable(_In_ const XMFLOAT4& outputColor)
         : m_vertexBuffer(nullptr)
         , m_indexBuffer(nullptr)
@@ -70,9 +64,6 @@ namespace library
       Returns:  HRESULT
                   Status code
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    /*--------------------------------------------------------------------
-      TODO: Renderable::initialize definition (remove the comment)
-    --------------------------------------------------------------------*/
     HRESULT Renderable::initialize(_In_ ID3D11Device* pDevice, _In_ ID3D11DeviceContext* pImmediateContext)
     { 
         HRESULT hr = S_OK;
@@ -307,9 +298,6 @@ namespace library
       Returns:  const XMFLOAT4&
                   The output color
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    /*--------------------------------------------------------------------
-      TODO: Renderable::GetOutputColor definition (remove the comment)
-    --------------------------------------------------------------------*/
     const XMFLOAT4& Renderable::GetOutputColor() const
     {
         return m_outputColor;
@@ -322,9 +310,6 @@ namespace library
       Returns:  BOOL
                   Whether the renderable has texture
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    /*--------------------------------------------------------------------
-      TODO: Renderable::HasTexture definition (remove the comment)
-    --------------------------------------------------------------------*/
     BOOL Renderable::HasTexture() const
     {
         return m_bHasTextures;

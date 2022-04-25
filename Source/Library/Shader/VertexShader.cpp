@@ -80,7 +80,7 @@ namespace library
                 .SemanticIndex = 0u,
                 .Format = DXGI_FORMAT_R32G32B32_FLOAT,
                 .InputSlot = 0u,
-                .AlignedByteOffset = 12u,
+                .AlignedByteOffset = 20u,
                 .InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA,
                 .InstanceDataStepRate = 0u
             }

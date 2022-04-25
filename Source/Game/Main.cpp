@@ -64,7 +64,7 @@ INT WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
     if (FAILED(game->GetRenderer()->AddVertexShader(L"LightShader", lightVertexShader)))
     {
         return 0;
-    }
+    } 
 
     // Phong
     std::shared_ptr<library::PixelShader> phongPixelShader = std::make_shared<library::PixelShader>(L"Shaders/PhongShaders.fxh", "PSPhong", "ps_5_0");
@@ -130,7 +130,7 @@ INT WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
         return 0;
     }
 
-    std::shared_ptr<Cube> phongCube = std::make_shared<Cube>(L"seafloor.dds");
+    std::shared_ptr<Cube> phongCube = std::make_shared<Cube>(L"Kirby.dds");
     if (FAILED(game->GetRenderer()->AddRenderable(L"PhongCube", phongCube)))
     {
         return 0;

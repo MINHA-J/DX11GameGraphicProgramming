@@ -125,7 +125,6 @@ C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C-C*/
 struct PS_LIGHT_CUBE_INPUT
 {
     float4 Position : SV_POSITION;
-    float2 TexCoord : TEXCOORD0;
 };
 
 
@@ -139,14 +138,20 @@ struct PS_LIGHT_CUBE_INPUT
 PS_PHONG_INPUT VSPhong(VS_PHONG_INPUT input)
 {
     PS_PHONG_INPUT output = (PS_PHONG_INPUT)0;
+
+    // perform space transformations
     output.Position = mul( input.Position, World );
     output.Position = mul( output.Position, View );
     output.Position = mul( output.Position, Projection );
     
-    output.Normal = normalize(mul( float4( input.Normal, 0), World ).xyz);
+    // compute the world normal
+    // normal vector in world space
+    output.Normal = normalize(mul(float4(input.Normal, 0), World).xyz);
 
-    output.WorldPosition = mul( input.Position, World );
+    // position of the vertex in world space
+    output.WorldPosition = mul(input.Position, World);
 
+    // texture coordinate
     output.TexCoord = input.TexCoord;
 
     return output;
@@ -163,8 +168,6 @@ PS_LIGHT_CUBE_INPUT VSLightCube( VS_PHONG_INPUT input )
     output.Position = mul( output.Position, View );
     output.Position = mul( output.Position, Projection );
     
-    output.TexCoord = input.TexCoord;
-    
     return output;
 }
 
@@ -178,26 +181,34 @@ PS_LIGHT_CUBE_INPUT VSLightCube( VS_PHONG_INPUT input )
 --------------------------------------------------------------------*/
 float4 PSPhong(PS_PHONG_INPUT input) : SV_TARGET
 {
-    float3 ambient = float3(0.1f, 0.1f, 0.1f);
+    float3 lightDirection;
+    float3 viewDirection;
+    float3 reflectDirection;
+    float4 TextureColor;
 
+    float3 ambient;
     float3 diffuse;
-    for (uint i = 0; i < NUM_LIGHTS; ++i)
-    {
-        float3 lightDirection = normalize(input.WorldPosition - LightPositions[i].xyz);
-        diffuse += dot(input.Normal, -lightDirection) * LightColors[i].xyz;
-    }
-
     float3 specular;
-    float3 viewDirection = normalize(input.WorldPosition - CameraPosition.xyz);
-    for (uint i = 0; i < NUM_LIGHTS; ++i)
+    
+    TextureColor = txDiffuse.Sample(samLinear, input.TexCoord);
+    viewDirection = normalize(CameraPosition.xyz - input.WorldPosition);
+
+    for (uint i = 0; i < NUM_LIGHTS; i++)
     {
-       float3 lightDirection = normalize(input.WorldPosition - LightPositions[i].xyz);
-       float3 reflectDirection = reflect(lightDirection, input.Normal);
-       specular += pow(saturate(dot(-viewDirection, reflectDirection), 20.0f)) * LightColors[i];
+        lightDirection = normalize(LightPositions[i].xyz - input.WorldPosition);
+        reflectDirection = normalize(reflect(-lightDirection, input.Normal));
+
+        ambient += float3(0.1f, 0.f, 0.1f) * LightColors[i].xyz;        
+        diffuse += saturate(dot(normalize(input.Normal), lightDirection) * LightColors[i].xyz);
+        specular += saturate(pow(dot(reflectDirection, viewDirection), 20.0f)) * LightColors[i];
     }
-
-
+    ambient *= TextureColor;
+    diffuse = saturate(diffuse)*TextureColor;
+    specular = saturate(specular)*TextureColor;
+   
+    // return TextureColor * float4(specular, 1.0f);
     return float4(ambient + diffuse + specular, 1.0f);
+    // return float4((normalize(viewDirection) + 1.0f)/2.0f, 1.0f);
 }
 
 
