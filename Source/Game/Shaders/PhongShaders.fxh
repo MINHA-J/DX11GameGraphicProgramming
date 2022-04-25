@@ -199,15 +199,14 @@ float4 PSPhong(PS_PHONG_INPUT input) : SV_TARGET
         reflectDirection = normalize(reflect(-lightDirection, input.Normal));
 
         ambient += float3(0.1f, 0.f, 0.1f) * LightColors[i].xyz;        
-        diffuse += saturate(dot(normalize(input.Normal), lightDirection) * LightColors[i].xyz);
-        specular += saturate(pow(dot(reflectDirection, viewDirection), 20.0f)) * LightColors[i];
+        diffuse += saturate(max(dot(normalize(input.Normal), lightDirection), 0) * LightColors[i].xyz);
+        specular += saturate(pow(max(dot(reflectDirection, viewDirection), 0), 20.0f)) * LightColors[i];
     }
-    ambient *= TextureColor;
-    diffuse = saturate(diffuse)*TextureColor;
-    specular = saturate(specular)*TextureColor;
+    diffuse = saturate(diffuse);
+    specular = saturate(specular);
    
-    // return TextureColor * float4(specular, 1.0f);
-    return float4(ambient + diffuse + specular, 1.0f);
+    // return float4(specular, 1.0f);
+    return TextureColor * float4(ambient + diffuse + specular, 1.0f);
     // return float4((normalize(viewDirection) + 1.0f)/2.0f, 1.0f);
 }
 

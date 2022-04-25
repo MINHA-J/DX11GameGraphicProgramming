@@ -443,11 +443,6 @@ namespace library
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
     void Renderer::Update(_In_ FLOAT deltaTime)
     {         
-        for (auto point_light : m_aPointLights)
-        {
-            point_light->Update(deltaTime);
-        }
-
         // update renderable
         for (auto renderables : m_renderables)
         {
@@ -456,6 +451,12 @@ namespace library
 
         // update camera
         m_camera.Update(deltaTime);
+
+        // update light
+        for (auto point_light : m_aPointLights)
+        {
+            point_light->Update(deltaTime);
+        }
     }
 
 
@@ -487,8 +488,8 @@ namespace library
         };
         m_immediateContext->UpdateSubresource(m_camera.GetConstantBuffer().Get(), 0u, nullptr, &cbCamera, 0u, 0u);
 
-        CBLights cbLight = {};
         // update lights constant buffer
+        CBLights cbLight = {};
         for (int i = 0u; i < NUM_LIGHTS; ++i)
         {
             cbLight.LightPositions[i] = m_aPointLights[i]->GetPosition();
@@ -522,9 +523,11 @@ namespace library
 
             m_immediateContext->PSSetShader(elem.second->GetPixelShader().Get(), nullptr, 0u);
 
+            m_immediateContext->PSSetConstantBuffers(3u, 1u, m_cbLights.GetAddressOf());
             m_immediateContext->PSSetConstantBuffers(0u, 1u, m_camera.GetConstantBuffer().GetAddressOf());
+            // m_immediateContext->PSSetConstantBuffers(1u, 1u, m_cbChangeOnResize.GetAddressOf());
             m_immediateContext->PSSetConstantBuffers(2u, 1u, elem.second->GetConstantBuffer().GetAddressOf());
-            m_immediateContext->PSSetConstantBuffers(3u, 1u, m_cbLights.GetAddressOf());            
+           
 
             if (elem.second->HasTexture())
             {
