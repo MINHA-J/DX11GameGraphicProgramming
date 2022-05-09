@@ -546,8 +546,8 @@ namespace library
                     m_immediateContext->PSSetShaderResources(0u, 1u, elem.second->GetMaterial(index).pDiffuse->GetTextureResourceView().GetAddressOf());
                     m_immediateContext->PSSetSamplers(0u, 1u, elem.second->GetMaterial(index).pDiffuse->GetSamplerState().GetAddressOf());
 
-                    // m_immediateContext->PSSetShaderResources(0u, 1u, elem.second->GetMaterial(i).pSpecular->GetTextureResourceView().GetAddressOf());
-                    // m_immediateContext->PSSetSamplers(0u, 1u, elem.second->GetMaterial(i).pSpecular->GetSamplerState().GetAddressOf());
+                    //m_immediateContext->PSSetShaderResources(0u, 1u, elem.second->GetMaterial(index).pSpecular->GetTextureResourceView().GetAddressOf());
+                    //m_immediateContext->PSSetSamplers(0u, 1u, elem.second->GetMaterial(index).pSpecular->GetSamplerState().GetAddressOf());
 
                     // Draw them by their respective indices, base index, and base vertex
                     m_immediateContext->DrawIndexed(
