@@ -484,7 +484,13 @@ namespace library
         CBChangeOnCameraMovement cbCamera
         {
             .View = XMMatrixTranspose(m_camera.GetView()),
-            .CameraPosition = {XMVectorGetX(m_camera.GetEye()), XMVectorGetY(m_camera.GetEye()), XMVectorGetZ(m_camera.GetEye()) , XMVectorGetW(m_camera.GetEye())}
+            .CameraPosition = 
+            {
+                XMVectorGetX(m_camera.GetEye()), 
+                XMVectorGetY(m_camera.GetEye()), 
+                XMVectorGetZ(m_camera.GetEye()), 
+                XMVectorGetW(m_camera.GetEye())
+            }
         };
         m_immediateContext->UpdateSubresource(m_camera.GetConstantBuffer().Get(), 0u, nullptr, &cbCamera, 0u, 0u);
 
@@ -514,8 +520,9 @@ namespace library
             m_immediateContext->UpdateSubresource(elem.second->GetConstantBuffer().Get(), 0u, nullptr, &cbFrame, 0u, 0u );
 
             // Set Shaders and constant buffers, shader resources, and samplers
-            // Set the constant buffer to each shaders accordingly
             m_immediateContext->VSSetShader(elem.second->GetVertexShader().Get(), nullptr, 0u);
+
+            // Set the constant buffer
             m_immediateContext->VSSetConstantBuffers(0u, 1u, m_camera.GetConstantBuffer().GetAddressOf());
             m_immediateContext->VSSetConstantBuffers(1u, 1u, m_cbChangeOnResize.GetAddressOf());
             m_immediateContext->VSSetConstantBuffers(2u, 1u, elem.second->GetConstantBuffer().GetAddressOf());
@@ -524,20 +531,33 @@ namespace library
             m_immediateContext->PSSetShader(elem.second->GetPixelShader().Get(), nullptr, 0u);
 
             m_immediateContext->PSSetConstantBuffers(3u, 1u, m_cbLights.GetAddressOf());
-            m_immediateContext->PSSetConstantBuffers(0u, 1u, m_camera.GetConstantBuffer().GetAddressOf());
-            // m_immediateContext->PSSetConstantBuffers(1u, 1u, m_cbChangeOnResize.GetAddressOf());
             m_immediateContext->PSSetConstantBuffers(2u, 1u, elem.second->GetConstantBuffer().GetAddressOf());
+            m_immediateContext->PSSetConstantBuffers(0u, 1u, m_camera.GetConstantBuffer().GetAddressOf());
            
-
             if (elem.second->HasTexture())
             {
-                m_immediateContext->PSSetShaderResources(0u, 1u, elem.second->GetTextureResourceView().GetAddressOf());
-                m_immediateContext->PSSetSamplers(0u, 1u, elem.second->GetSamplerState().GetAddressOf());
+                // For each meshes
+                for (int i = 0u; i < elem.second->GetNumMeshes(); ++i)
+                {
+                    // Get the materials and set them as the shader resources and samplers
+                    m_immediateContext->PSSetShaderResources(0u, 1u, elem.second->GetMaterial(i).pDiffuse->GetTextureResourceView().GetAddressOf());
+                    m_immediateContext->PSSetSamplers(0u, 1u, elem.second->GetMaterial(i).pDiffuse->GetSamplerState().GetAddressOf());
+
+                    // m_immediateContext->PSSetShaderResources(0u, 1u, elem.second->GetMaterial(i).pSpecular->GetTextureResourceView().GetAddressOf());
+                    // m_immediateContext->PSSetSamplers(0u, 1u, elem.second->GetMaterial(i).pSpecular->GetSamplerState().GetAddressOf());
+
+                    // Draw them by their respective indices, base index, and base vertex
+                    m_immediateContext->DrawIndexed(
+                        elem.second->GetMesh(i).uNumIndices,
+                        elem.second->GetMesh(i).uBaseIndex,
+                        elem.second->GetMesh(i).uBaseVertex
+                    );
+                }
             }
-
-            // Calling Draw tells Direct3D to start sending commands to the graphics device.
-            m_immediateContext->DrawIndexed(elem.second->GetNumIndices(), 0, 0);
-
+            else
+            {
+                m_immediateContext->DrawIndexed(elem.second->GetNumIndices(), 0, 0);
+            }
         }
 
         // Present our back buffer to our front buffer
