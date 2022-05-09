@@ -537,11 +537,14 @@ namespace library
             if (elem.second->HasTexture())
             {
                 // For each meshes
-                for (int i = 0u; i < elem.second->GetNumMeshes(); ++i)
+                for (UINT i = 0u; i < elem.second->GetNumMeshes(); ++i)
                 {
+
+                    UINT index = elem.second->GetMesh(i).uMaterialIndex;
+
                     // Get the materials and set them as the shader resources and samplers
-                    m_immediateContext->PSSetShaderResources(0u, 1u, elem.second->GetMaterial(i).pDiffuse->GetTextureResourceView().GetAddressOf());
-                    m_immediateContext->PSSetSamplers(0u, 1u, elem.second->GetMaterial(i).pDiffuse->GetSamplerState().GetAddressOf());
+                    m_immediateContext->PSSetShaderResources(0u, 1u, elem.second->GetMaterial(index).pDiffuse->GetTextureResourceView().GetAddressOf());
+                    m_immediateContext->PSSetSamplers(0u, 1u, elem.second->GetMaterial(index).pDiffuse->GetSamplerState().GetAddressOf());
 
                     // m_immediateContext->PSSetShaderResources(0u, 1u, elem.second->GetMaterial(i).pSpecular->GetTextureResourceView().GetAddressOf());
                     // m_immediateContext->PSSetSamplers(0u, 1u, elem.second->GetMaterial(i).pSpecular->GetSamplerState().GetAddressOf());
