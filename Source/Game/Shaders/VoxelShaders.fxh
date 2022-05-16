@@ -93,7 +93,6 @@ struct VS_INPUT
 {
     float4 Position : POSITION;
     float3 Normal : NORMAL;
-    float3 InstancedColor : INSTANCED_COLOR;
     row_major matrix Transform : INSTANCE_TRANSFORM;
 };
 
@@ -112,7 +111,6 @@ struct PS_INPUT
     float4 Position : SV_POSITION;
     float3 Normal : NORMAL;
     float3 WorldPosition : WORLDPOS;
-    float3 Color : COLOR;
 };
 
 
@@ -124,21 +122,19 @@ struct PS_INPUT
 --------------------------------------------------------------------*/
 PS_INPUT VSVoxel(VS_INPUT input)
 { 
-    // Vertex shader must take the instance transform data into account
-    PS_INPUT output = (PS_INPUT) 0;
+ // Vertex shader must take the instance transform data into account
+    PS_INPUT output = (PS_INPUT)0;
     
     // Update the position of the vertices based on the data for this particular instance.
-    float4 InstancePosition = mul(input.Position, input.Transform);
+    float4 InstancePos = mul(input.Position, input.Transform);
     
-    output.Position = mul(InstancePosition, World);
+    output.Position = mul(InstancePos, World);
     output.Position = mul(output.Position, View);
     output.Position = mul(output.Position, Projection);
     
     output.Normal = normalize(mul(float4(input.Normal, 0), World).xyz);
     
-    output.WorldPosition = mul(InstancePosition, World);
-    
-    output.Color = input.InstancedColor;
+    output.WorldPosition = mul(InstancePos, World);
     
     return output;
 }
@@ -152,14 +148,11 @@ PS_INPUT VSVoxel(VS_INPUT input)
 --------------------------------------------------------------------*/
 float4 PSVoxel(PS_INPUT input) : SV_TARGET
 {
-    // Pixel shader must take the output color in the constant buffer into account
-    float4 OutputColor = (input.Color, 1.0f);
-    
     // You must apply diffuse shading such as Lambertian shading with an ambient light
-    float3 ambient = (0.0f, 0.0f, 0.0f);
-    float3 diffuse = (0.0f, 0.0f, 0.0f);
+    float3 ambient = float3(0.0f, 0.0f, 0.0f);
+    float3 diffuse = float3(0.0f, 0.0f, 0.0f);
     
-    float3 lightDirection = (0.0f, 0.0f, 0.0f);
+    float3 lightDirection = float3(0.0f, 0.0f, 0.0f);
     
     for (uint i = 0; i < NUM_LIGHTS; i++)
     {
@@ -170,5 +163,6 @@ float4 PSVoxel(PS_INPUT input) : SV_TARGET
     }
     diffuse = saturate(diffuse);
     
+     // Pixel shader must take the output color in the constant buffer into account
     return OutputColor * float4(ambient + diffuse, 1.0f);
 }

@@ -12,9 +12,6 @@ namespace library
       Args:     const XMFLOAT4& outputColor
                   Color of the voxel
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    /*--------------------------------------------------------------------
-      TODO: Voxel::Voxel definition (remove the comment)
-    --------------------------------------------------------------------*/
     Voxel::Voxel(_In_ const XMFLOAT4& outputColor)
         : InstancedRenderable(outputColor)
     { }
@@ -30,9 +27,6 @@ namespace library
                 const XMFLOAT4& outputColor
                   Color of the voxel
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    /*--------------------------------------------------------------------
-      TODO: Voxel::Voxel definition (remove the comment)
-    --------------------------------------------------------------------*/
     Voxel::Voxel(_In_ std::vector<InstanceData>&& aInstanceData, _In_ const XMFLOAT4& outputColor)
         : InstancedRenderable(move(aInstanceData), outputColor)
     { }
@@ -51,9 +45,6 @@ namespace library
       Returns:  HRESULT
                   Status code
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    /*--------------------------------------------------------------------
-      TODO: Voxel::Initialize definition (remove the comment)
-    --------------------------------------------------------------------*/
     HRESULT Voxel::Initialize(_In_ ID3D11Device* pDevice, _In_ ID3D11DeviceContext* pImmediateContext)
     {
         HRESULT hr = S_OK;
@@ -77,9 +68,6 @@ namespace library
       Args:     FLOAT deltaTime
                   Elapsed time
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    /*--------------------------------------------------------------------
-      TODO: Voxel::Update definition (remove the comment)
-    --------------------------------------------------------------------*/
     void Voxel::Update(_In_ FLOAT deltaTime)
     {
         UNREFERENCED_PARAMETER(deltaTime);
@@ -94,9 +82,6 @@ namespace library
       Returns:  UINT
                   Number of vertices
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    /*--------------------------------------------------------------------
-      TODO: Voxel::GetNumVertices definition (remove the comment)
-    --------------------------------------------------------------------*/
     UINT Voxel::GetNumVertices() const
     {
         return NUM_VERTICES;
@@ -110,9 +95,6 @@ namespace library
       Returns:  UINT
                   Number of indices
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    /*--------------------------------------------------------------------
-      TODO: Voxel::GetNumIndices definition (remove the comment)
-    --------------------------------------------------------------------*/
     UINT Voxel::GetNumIndices() const
     {
         return NUM_INDICES;
@@ -127,9 +109,6 @@ namespace library
       Returns:  const library::SimpleVertex*
                   Pointer to the vertices data
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    /*--------------------------------------------------------------------
-      TODO: Voxel::getVertices definition (remove the comment)
-    --------------------------------------------------------------------*/
     const SimpleVertex* Voxel::getVertices() const
     {
         return VERTICES;
@@ -144,9 +123,6 @@ namespace library
       Returns:  const WORD*
                   Pointer to the indices data
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    /*--------------------------------------------------------------------
-      TODO: Voxel::getIndices definition (remove the comment)
-    --------------------------------------------------------------------*/
     const WORD* Voxel::getIndices() const
     {
         return INDICES;

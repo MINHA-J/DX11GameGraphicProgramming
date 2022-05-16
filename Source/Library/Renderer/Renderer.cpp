@@ -428,9 +428,6 @@ namespace library
        Returns:  HRESULT
                    Status code
      M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-     /*--------------------------------------------------------------------
-       TODO: Renderer::AddScene definition (remove the comment)
-     --------------------------------------------------------------------*/
     HRESULT Renderer::AddScene(_In_ PCWSTR pszSceneName, const std::filesystem::path& sceneFilePath)
     {
         // Add the scene to the renderer
@@ -456,12 +453,8 @@ namespace library
        Returns:  HRESULT
                    Status code
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    /*--------------------------------------------------------------------
-       TODO: Renderer::SetMainScene definition (remove the comment)
-    --------------------------------------------------------------------*/
     HRESULT Renderer::SetMainScene(_In_ PCWSTR pszSceneName)
     {
-        // TODO ?
         HRESULT hr = S_OK;
         m_pszMainSceneName = pszSceneName;
         return hr;
@@ -517,8 +510,7 @@ namespace library
             point_light->Update(deltaTime);
         }
 
-        // update voxel 
-        // TODO?
+        // update voxel
         auto scene = m_scenes.find(m_pszMainSceneName);
         for (auto voxel : (scene->second)->GetVoxels())
         {
@@ -658,11 +650,16 @@ namespace library
             m_immediateContext->VSSetShader(voxel->GetVertexShader().Get(), nullptr, 0u);
 
             // Set the constant buffer
-            m_immediateContext->VSSetConstantBuffers(0u, 1u, m_cbChangeOnResize.GetAddressOf());
-            m_immediateContext->VSSetConstantBuffers(1u, 1u, voxel->GetConstantBuffer().GetAddressOf());
+            m_immediateContext->VSSetConstantBuffers(0u, 1u, m_camera.GetConstantBuffer().GetAddressOf());
+            m_immediateContext->VSSetConstantBuffers(1u, 1u, m_cbChangeOnResize.GetAddressOf());
+            m_immediateContext->VSSetConstantBuffers(2u, 1u, voxel->GetConstantBuffer().GetAddressOf());
+            m_immediateContext->VSSetConstantBuffers(3u, 1u, m_cbLights.GetAddressOf());
 
             m_immediateContext->PSSetShader(voxel->GetPixelShader().Get(), nullptr, 0u);
-            m_immediateContext->PSSetConstantBuffers(1u, 1u, voxel->GetConstantBuffer().GetAddressOf());
+
+            m_immediateContext->PSSetConstantBuffers(0u, 1u, m_camera.GetConstantBuffer().GetAddressOf());
+            m_immediateContext->PSSetConstantBuffers(2u, 1u, voxel->GetConstantBuffer().GetAddressOf());
+            m_immediateContext->PSSetConstantBuffers(3u, 1u, m_cbLights.GetAddressOf());
 
 
             if (voxel->HasTexture())
@@ -771,9 +768,6 @@ namespace library
        Returns:  HRESULT
                    Status code
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    /*--------------------------------------------------------------------
-      TODO: Renderer::SetVertexShaderOfScene definition (remove the comment)
-    --------------------------------------------------------------------*/
     HRESULT Renderer::SetVertexShaderOfScene(_In_ PCWSTR pszSceneName, _In_ PCWSTR pszVertexShaderName)
     {
         auto scene = m_scenes.find(pszSceneName);
@@ -784,7 +778,7 @@ namespace library
         if (vs == m_vertexShaders.end())
             return E_FAIL;
 
-        for (auto voxel : (scene->second)->GetVoxels()) // TODO ?
+        for (auto voxel : (scene->second)->GetVoxels())
         {
             voxel->SetVertexShader(vs->second);
         }
@@ -804,9 +798,6 @@ namespace library
        Returns:  HRESULT
                    Status code
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    /*--------------------------------------------------------------------
-      TODO: Renderer::SetPixelShaderOfScene definition (remove the comment)
-    --------------------------------------------------------------------*/
     HRESULT Renderer::SetPixelShaderOfScene(_In_ PCWSTR pszSceneName, _In_ PCWSTR pszPixelShaderName)
     {
         auto scene = m_scenes.find(pszSceneName);
@@ -817,7 +808,7 @@ namespace library
         if (ps == m_pixelShaders.end())
             return E_FAIL;
 
-        for (auto voxel : (scene->second)->GetVoxels()) // TODO ?
+        for (auto voxel : (scene->second)->GetVoxels())
         {
             voxel->SetPixelShader(ps->second);
         }
