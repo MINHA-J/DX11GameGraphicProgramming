@@ -60,10 +60,10 @@ namespace library
             {
                 .SemanticName = "POSITION",
                 .SemanticIndex = 0u,
-                .Format = DXGI_FORMAT_R32G32B32_FLOAT, 
+                .Format = DXGI_FORMAT_R32G32B32_FLOAT,
                 .InputSlot = 0u,
-                .AlignedByteOffset = 0u, 
-                .InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA, 
+                .AlignedByteOffset = 0u,
+                .InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA,
                 .InstanceDataStepRate = 0u
             },
             {
@@ -83,7 +83,53 @@ namespace library
                 .AlignedByteOffset = 20u,
                 .InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA,
                 .InstanceDataStepRate = 0u
+            },
+            {
+                .SemanticName = "INSTANCED_COLOR",
+                .SemanticIndex = 0u,
+                .Format = DXGI_FORMAT_R32G32B32_FLOAT,
+                .InputSlot = 1u,
+                .AlignedByteOffset = 0u,
+                .InputSlotClass = D3D11_INPUT_PER_INSTANCE_DATA,
+                .InstanceDataStepRate = 1u
+            },
+            {
+                .SemanticName = "INSTANCE_TRANSFORM",
+                .SemanticIndex = 0u,
+                .Format = DXGI_FORMAT_R32G32B32A32_FLOAT,
+                .InputSlot = 1u,
+                .AlignedByteOffset = 12u,
+                .InputSlotClass = D3D11_INPUT_PER_INSTANCE_DATA,
+                .InstanceDataStepRate = 1u
+            },
+            {
+                .SemanticName = "INSTANCE_TRANSFORM",
+                .SemanticIndex = 1u,
+                .Format = DXGI_FORMAT_R32G32B32A32_FLOAT,
+                .InputSlot = 1u,
+                .AlignedByteOffset = 28u,
+                .InputSlotClass = D3D11_INPUT_PER_INSTANCE_DATA,
+                .InstanceDataStepRate = 1u
+            },
+            {
+                .SemanticName = "INSTANCE_TRANSFORM",
+                .SemanticIndex = 2u,
+                .Format = DXGI_FORMAT_R32G32B32A32_FLOAT,
+                .InputSlot = 1u,
+                .AlignedByteOffset = 44u,
+                .InputSlotClass = D3D11_INPUT_PER_INSTANCE_DATA,
+                .InstanceDataStepRate = 1u
+            },
+            {
+                .SemanticName = "INSTANCE_TRANSFORM",
+                .SemanticIndex = 3u,
+                .Format = DXGI_FORMAT_R32G32B32A32_FLOAT,
+                .InputSlot = 1u,
+                .AlignedByteOffset = 60u,
+                .InputSlotClass = D3D11_INPUT_PER_INSTANCE_DATA,
+                .InstanceDataStepRate = 1u
             }
+
         };
 
         UINT numElements = ARRAYSIZE(layout);
@@ -94,6 +140,8 @@ namespace library
  
         if (FAILED(hr))
             return hr;
+
+        return hr;
     }
 
 

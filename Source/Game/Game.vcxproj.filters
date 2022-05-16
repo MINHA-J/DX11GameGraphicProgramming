@@ -61,6 +61,12 @@
     <None Include="Shaders\PhongShaders.fxh">
       <Filter>Header Files\Shaders</Filter>
     </None>
+    <None Include="Shaders\VoxelShaders.fxh">
+      <Filter>Header Files\Shaders</Filter>
+    </None>
+    <None Include="Shaders\Shaders.fxh">
+      <Filter>Header Files\Shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Cube\BaseCube.h">
