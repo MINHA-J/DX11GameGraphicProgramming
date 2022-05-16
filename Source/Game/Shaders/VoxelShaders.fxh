@@ -122,7 +122,7 @@ struct PS_INPUT
 --------------------------------------------------------------------*/
 PS_INPUT VSVoxel(VS_INPUT input)
 { 
- // Vertex shader must take the instance transform data into account
+    // Vertex shader must take the instance transform data into account
     PS_INPUT output = (PS_INPUT)0;
     
     // Update the position of the vertices based on the data for this particular instance.

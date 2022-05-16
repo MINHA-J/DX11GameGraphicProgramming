@@ -181,14 +181,14 @@ PS_LIGHT_CUBE_INPUT VSLightCube( VS_PHONG_INPUT input )
 --------------------------------------------------------------------*/
 float4 PSPhong(PS_PHONG_INPUT input) : SV_TARGET
 {
-    float3 lightDirection;
-    float3 viewDirection;
-    float3 reflectDirection;
-    float4 TextureColor;
+    float3 lightDirection = float3(0.0f, 0.0f, 0.0f);
+    float3 viewDirection = float3(0.0f, 0.0f, 0.0f);
+    float3 reflectDirection = float3(0.0f, 0.0f, 0.0f);
+    float4 TextureColor = float4(0.0f, 0.0f, 0.0f, 0.0f);
 
-    float3 ambient;
-    float3 diffuse;
-    float3 specular;
+    float3 ambient = float3(0.0f, 0.0f, 0.0f);
+    float3 diffuse = float3(0.0f, 0.0f, 0.0f);
+    float3 specular = float3(0.0f, 0.0f, 0.0f);
     
     TextureColor = txDiffuse.Sample(samLinear, input.TexCoord);
     viewDirection = normalize(CameraPosition.xyz - input.WorldPosition);

@@ -510,7 +510,7 @@ namespace library
             point_light->Update(deltaTime);
         }
 
-        // update voxel
+        // update voxel in main scene
         auto scene = m_scenes.find(m_pszMainSceneName);
         for (auto voxel : (scene->second)->GetVoxels())
         {
@@ -687,7 +687,7 @@ namespace library
                     voxel->GetNumInstances(),
                     0,
                     0,
-                    1);
+                    0);
             }
 
         }
