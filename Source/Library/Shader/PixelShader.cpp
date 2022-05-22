@@ -53,6 +53,8 @@ namespace library
 
         if (FAILED(hr))
             return hr;
+
+        return hr;
     }
 
 

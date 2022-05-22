@@ -8,8 +8,8 @@
 //--------------------------------------------------------------------------------------
 // Global Variables
 //--------------------------------------------------------------------------------------
-Texture2D txDiffuse :register( t0 );
-SamplerState samLinear :register( s0 );
+Texture2D txDiffuse : register(t0);
+SamplerState samLinear : register(s0);
 
 
 //--------------------------------------------------------------------------------------
@@ -66,7 +66,7 @@ struct VS_INPUT
 C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C-C*/
 struct PS_INPUT
 {
-    float4 Position : SV_POSITION;  // interpolated vertex position (system value) 
+    float4 Position : SV_POSITION; // interpolated vertex position (system value) 
     float2 TexCoord : TEXCOORD0;
 };
 
@@ -74,12 +74,12 @@ struct PS_INPUT
 //--------------------------------------------------------------------------------------
 // Vertex Shader
 //--------------------------------------------------------------------------------------
-PS_INPUT VS( VS_INPUT input )
+PS_INPUT VS(VS_INPUT input)
 {
-    PS_INPUT output = (PS_INPUT)0;
-    output.Position = mul( input.Position, World );
-    output.Position = mul( output.Position, View );
-    output.Position = mul( output.Position, Projection );
+    PS_INPUT output = (PS_INPUT) 0;
+    output.Position = mul(input.Position, World);
+    output.Position = mul(output.Position, View);
+    output.Position = mul(output.Position, Projection);
     
     output.TexCoord = input.TexCoord;
 
@@ -89,7 +89,7 @@ PS_INPUT VS( VS_INPUT input )
 //--------------------------------------------------------------------------------------
 // Pixel Shader
 //--------------------------------------------------------------------------------------
-float4 PS(PS_INPUT input): SV_Target
+float4 PS(PS_INPUT input) : SV_Target
 {
     return txDiffuse.Sample(samLinear, input.TexCoord);
 }
