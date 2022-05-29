@@ -30,6 +30,12 @@ namespace library
         XMFLOAT4 aBoneWeights;
     };
 
+    struct NormalData
+    {
+        XMFLOAT3 Tangent;
+        XMFLOAT3 Bitangent;
+    };
+
     struct CBChangeOnCameraMovement
     {
         XMMATRIX View;
@@ -45,6 +51,7 @@ namespace library
     {
         XMMATRIX World;
         XMFLOAT4 OutputColor;
+        BOOL HasNormalMap;
     };
 
     struct CBSkinning

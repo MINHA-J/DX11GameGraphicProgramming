@@ -85,10 +85,28 @@ namespace library
                 .InstanceDataStepRate = 0u
             },
             {
+                .SemanticName = "TANGENT",
+                .SemanticIndex = 0u,
+                .Format = DXGI_FORMAT_R32G32B32_FLOAT,
+                .InputSlot = 1u,
+                .AlignedByteOffset = 0u,
+                .InputSlotClass = D3D11_INPUT_PER_INSTANCE_DATA,
+                .InstanceDataStepRate = 0u
+            },
+            {
+                .SemanticName = "BITANGENT",
+                .SemanticIndex = 0u,
+                .Format = DXGI_FORMAT_R32G32B32_FLOAT,
+                .InputSlot = 1u,
+                .AlignedByteOffset = 12u,
+                .InputSlotClass = D3D11_INPUT_PER_INSTANCE_DATA,
+                .InstanceDataStepRate = 0u
+            },
+            {
                 .SemanticName = "INSTANCE_TRANSFORM",
                 .SemanticIndex = 0u,
                 .Format = DXGI_FORMAT_R32G32B32A32_FLOAT,
-                .InputSlot = 1u,
+                .InputSlot = 2u,
                 .AlignedByteOffset = 0u,
                 .InputSlotClass = D3D11_INPUT_PER_INSTANCE_DATA,
                 .InstanceDataStepRate = 1u
@@ -97,7 +115,7 @@ namespace library
                 .SemanticName = "INSTANCE_TRANSFORM",
                 .SemanticIndex = 1u,
                 .Format = DXGI_FORMAT_R32G32B32A32_FLOAT,
-                .InputSlot = 1u,
+                .InputSlot = 2u,
                 .AlignedByteOffset = 16u,
                 .InputSlotClass = D3D11_INPUT_PER_INSTANCE_DATA,
                 .InstanceDataStepRate = 1u
@@ -106,7 +124,7 @@ namespace library
                 .SemanticName = "INSTANCE_TRANSFORM",
                 .SemanticIndex = 2u,
                 .Format = DXGI_FORMAT_R32G32B32A32_FLOAT,
-                .InputSlot = 1u,
+                .InputSlot = 2u,
                 .AlignedByteOffset = 32u,
                 .InputSlotClass = D3D11_INPUT_PER_INSTANCE_DATA,
                 .InstanceDataStepRate = 1u
@@ -115,7 +133,7 @@ namespace library
                 .SemanticName = "INSTANCE_TRANSFORM",
                 .SemanticIndex = 3u,
                 .Format = DXGI_FORMAT_R32G32B32A32_FLOAT,
-                .InputSlot = 1u,
+                .InputSlot = 2u,
                 .AlignedByteOffset = 48u,
                 .InputSlotClass = D3D11_INPUT_PER_INSTANCE_DATA,
                 .InstanceDataStepRate = 1u
