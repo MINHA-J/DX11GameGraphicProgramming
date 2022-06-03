@@ -66,7 +66,8 @@ namespace library
             return hr;
 
         // Create vertex buffer (m_normalBuffer)
-        if (HasTexture() && m_aNormalData.empty())
+        // if (HasTexture() && m_aNormalData.empty()) TODO?
+        if (m_aNormalData.empty())
         {
             // compute tangent/bitangent vectors manually
             calculateNormalMapVectors();
