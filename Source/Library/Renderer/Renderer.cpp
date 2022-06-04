@@ -35,7 +35,7 @@ namespace library
         , m_padding{ '\0' }
         , m_camera(XMVectorSet(0.0f, 3.0f, -6.0f, 0.0f))
         , m_projection()
-        , m_scenes()
+        , m_scenes(std::unordered_map<std::wstring, std::shared_ptr<Scene>>())
         , m_invalidTexture(std::make_shared<Texture>(L"Content/Common/InvalidTexture.png"))
         , m_shadowMapTexture(nullptr)
         , m_shadowVertexShader(nullptr)
@@ -286,7 +286,7 @@ namespace library
         bd.ByteWidth = sizeof(CBShadowMatrix);
         bd.Usage = D3D11_USAGE_DEFAULT;
         bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-        bd.CPUAccessFlags = 0;
+        bd.CPUAccessFlags = 0u;
         hr = m_d3dDevice->CreateBuffer(&bd, nullptr, m_cbShadowMatrix.GetAddressOf());
         if (FAILED(hr))
         {
@@ -294,7 +294,6 @@ namespace library
         }
 
         // initialize m_shadowMapTexture variable
-            // Shadow dow map has the same width and height of view space TODO?
         m_shadowMapTexture = std::make_shared<RenderTexture>(static_cast<FLOAT>(uWidth), static_cast<FLOAT>(uHeight));
 
         // Call Initialize m_shadowMapTexture
@@ -463,7 +462,7 @@ namespace library
     --------------------------------------------------------------------*/
     void Renderer::Render()
     {
-        // Store the depths into the shadow map before real rendering
+        // At first, Store the depths into the shadow map before real rendering
         RenderSceneToTexture();
 
 
@@ -549,26 +548,22 @@ namespace library
                 for (UINT i = 0u; i < renderable.second->GetNumMeshes(); ++i)
                 {
                     UINT index = renderable.second->GetMesh(i).uMaterialIndex;
-                    UINT StartSlot = 0u;
 
                     // Get the materials and set them as the shader resources and samplers
                     if (renderable.second->GetMaterial(index)->pDiffuse)
                     {
-                        m_immediateContext->PSSetShaderResources(StartSlot, 1u, renderable.second->GetMaterial(index)->pDiffuse->GetTextureResourceView().GetAddressOf());
-                        m_immediateContext->PSSetSamplers(StartSlot, 1u, renderable.second->GetMaterial(index)->pDiffuse->GetSamplerState().GetAddressOf());
-                        StartSlot++;
+                        m_immediateContext->PSSetShaderResources(0u, 1u, renderable.second->GetMaterial(index)->pDiffuse->GetTextureResourceView().GetAddressOf());
+                        m_immediateContext->PSSetSamplers(0u, 1u, renderable.second->GetMaterial(index)->pDiffuse->GetSamplerState().GetAddressOf());
                     }
                     if (renderable.second->GetMaterial(index)->pNormal)
                     {
-                        m_immediateContext->PSSetShaderResources(StartSlot, 1u, renderable.second->GetMaterial(index)->pNormal->GetTextureResourceView().GetAddressOf());
-                        m_immediateContext->PSSetSamplers(StartSlot, 1u, renderable.second->GetMaterial(index)->pNormal->GetSamplerState().GetAddressOf());
-                        StartSlot++;
+                        m_immediateContext->PSSetShaderResources(1u, 1u, renderable.second->GetMaterial(index)->pNormal->GetTextureResourceView().GetAddressOf());
+                        m_immediateContext->PSSetSamplers(1u, 1u, renderable.second->GetMaterial(index)->pNormal->GetSamplerState().GetAddressOf());
                     }
                     if (m_shadowMapTexture != nullptr)
                     {
-                        m_immediateContext->PSSetShaderResources(StartSlot, 1u, m_shadowMapTexture->GetShaderResourceView().GetAddressOf());
-                        m_immediateContext->PSSetSamplers(StartSlot, 1u, m_shadowMapTexture->GetSamplerState().GetAddressOf());
-                        StartSlot++;
+                        m_immediateContext->PSSetShaderResources(2u, 1u, m_shadowMapTexture->GetShaderResourceView().GetAddressOf());
+                        m_immediateContext->PSSetSamplers(2u, 1u, m_shadowMapTexture->GetSamplerState().GetAddressOf());
                     }
 
                     // Draw them by their respective indices, base index, and base vertex
@@ -720,7 +715,7 @@ namespace library
             // Set the pixel shader and constant buffers
             m_immediateContext->PSSetShader(model.second->GetPixelShader().Get(), nullptr, 0u);
             m_immediateContext->PSSetConstantBuffers(0u, 1u, m_camera.GetConstantBuffer().GetAddressOf());
-            // m_immediateContext->PSSetConstantBuffers(1u, 1u, m_cbChangeOnResize.GetAddressOf());
+            m_immediateContext->PSSetConstantBuffers(1u, 1u, m_cbChangeOnResize.GetAddressOf());
             m_immediateContext->PSSetConstantBuffers(2u, 1u, model.second->GetConstantBuffer().GetAddressOf());
             m_immediateContext->PSSetConstantBuffers(3u, 1u, m_cbLights.GetAddressOf()); 
             // m_immediateContext->PSSetConstantBuffers(4u, 1u, model.second->GetSkinningConstantBuffer().GetAddressOf());
@@ -731,25 +726,21 @@ namespace library
                 for (UINT i = 0u; i < model.second->GetNumMeshes(); ++i)
                 {
                     UINT index = model.second->GetMesh(i).uMaterialIndex;
-                    UINT StartSlot = 0u;
                     // Get the materials and set them as the shader resources and samplers
                     if (model.second->GetMaterial(index)->pDiffuse)
                     {
-                        m_immediateContext->PSSetShaderResources(StartSlot, 1u, model.second->GetMaterial(index)->pDiffuse->GetTextureResourceView().GetAddressOf());
-                        m_immediateContext->PSSetSamplers(StartSlot, 1u, model.second->GetMaterial(index)->pDiffuse->GetSamplerState().GetAddressOf());
-                        StartSlot++;
+                        m_immediateContext->PSSetShaderResources(0u, 1u, model.second->GetMaterial(index)->pDiffuse->GetTextureResourceView().GetAddressOf());
+                        m_immediateContext->PSSetSamplers(0u, 1u, model.second->GetMaterial(index)->pDiffuse->GetSamplerState().GetAddressOf());
                     }
                     if (model.second->GetMaterial(index)->pNormal)
                     {
-                        m_immediateContext->PSSetShaderResources(StartSlot, 1u, model.second->GetMaterial(index)->pNormal->GetTextureResourceView().GetAddressOf());
-                        m_immediateContext->PSSetSamplers(StartSlot, 1u, model.second->GetMaterial(index)->pNormal->GetSamplerState().GetAddressOf());
-                        StartSlot++;
+                        m_immediateContext->PSSetShaderResources(1u, 1u, model.second->GetMaterial(index)->pNormal->GetTextureResourceView().GetAddressOf());
+                        m_immediateContext->PSSetSamplers(1u, 1u, model.second->GetMaterial(index)->pNormal->GetSamplerState().GetAddressOf());
                     }
                     if (m_shadowMapTexture != nullptr)
                     {
-                        m_immediateContext->PSSetShaderResources(StartSlot, 1u, m_shadowMapTexture->GetShaderResourceView().GetAddressOf());
-                        m_immediateContext->PSSetSamplers(StartSlot, 1u, m_shadowMapTexture->GetSamplerState().GetAddressOf());
-                        StartSlot++;
+                        m_immediateContext->PSSetShaderResources(2u, 1u, m_shadowMapTexture->GetShaderResourceView().GetAddressOf());
+                        m_immediateContext->PSSetSamplers(2u, 1u, m_shadowMapTexture->GetSamplerState().GetAddressOf());
                     }
 
                     // Draw them by their respective indices, base index, and base vertex
@@ -804,7 +795,6 @@ namespace library
 
         // Render renderables with shadow map shaders
         auto scene = m_scenes.find(m_pszMainSceneName);
-
         for (auto it = (scene->second)->GetRenderables().begin(); it != (scene->second)->GetRenderables().end(); ++it)
         {
             // Bind vertex buffer, index buffer, input layout
@@ -912,7 +902,9 @@ namespace library
             );
         }
 
-        // Reset the render target to the original back buffer
+        // m_swapChain->Present(0, 0);
+
+        // After rendering the scene, Reset the render target to the original back buffer
         m_immediateContext->OMSetRenderTargets(
             1,
             m_renderTargetView.GetAddressOf(),

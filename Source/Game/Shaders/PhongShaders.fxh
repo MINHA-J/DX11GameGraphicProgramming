@@ -238,7 +238,9 @@ float4 PSPhong(PS_PHONG_INPUT input) : SV_TARGET
     depthTexCoord.x = input.LightViewPosition.x / input.LightViewPosition.w / 2.0f + 0.5f;
     depthTexCoord.y = -input.LightViewPosition.y / input.LightViewPosition.w / 2.0f + 0.5f;
 
+    // Get the closest depth value z from depth map
     float closestDepth = shadowMapTexture.Sample(shadowMapSampler, depthTexCoord).r;
+    // Compute the current depth value d
     float currentDepth = input.LightViewPosition.z / input.LightViewPosition.w;
     
     // Linearize the depth values
