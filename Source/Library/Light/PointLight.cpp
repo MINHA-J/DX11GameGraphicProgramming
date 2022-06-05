@@ -5,15 +5,20 @@
 namespace library
 {
     /*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
-       Method:   PointLight::PointLight
-       Summary:  Constructor
-       Modifies: [m_position, m_color, m_eye, m_at,
-                  m_up, m_view, m_projection].
-     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-     /*--------------------------------------------------------------------
-       TODO: PointLight::PointLight definition (remove the comment)
-     --------------------------------------------------------------------*/
-    PointLight::PointLight(_In_ const XMFLOAT4& position, _In_ const XMFLOAT4& color)
+      Method:   PointLight::PointLight
+      Summary:  Constructor
+      Args:     const XMFLOAT4& position
+                  Position of the light
+                const XMFLOAT4& color
+                  Position of the color
+                FLOAT attenuationDistance
+                  Attenuation distance
+      Modifies: [m_position, m_color, m_attenuationDistance].
+    M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
+    /*--------------------------------------------------------------------
+      TODO: PointLight::PointLight definition (remove the comment)
+    --------------------------------------------------------------------*/
+    PointLight::PointLight(_In_ const XMFLOAT4& position, _In_ const XMFLOAT4& color, _In_ FLOAT attenuationDistance)
         : m_position(position)
         , m_color(color)
         , m_eye(XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f))
@@ -21,6 +26,7 @@ namespace library
         , m_up(DEFAULT_UP)
         , m_view(XMMatrixIdentity())
         , m_projection(XMMatrixIdentity())
+        , m_attenuationDistance(attenuationDistance)
     { }
 
 
@@ -79,6 +85,20 @@ namespace library
         return m_projection;
     }
 
+
+    /*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
+      Method:   PointLight::GetAttenuationDistance
+      Summary:  Returns the attenuation distance
+      Returns:  FLOAT
+                  Attenuation distance
+    M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
+    /*--------------------------------------------------------------------
+      TODO: PointLight::GetAttenuationDistance definition (remove the comment)
+    --------------------------------------------------------------------*/
+    FLOAT PointLight::GetAttenuationDistance() const
+    {
+        return m_attenuationDistance;
+    }
 
     /*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
       Method:   PointLight::Initialize

@@ -32,7 +32,7 @@ namespace library
     {
     public:
         RotatingPointLight() = delete;
-        RotatingPointLight(_In_ const XMFLOAT4& position, _In_ const XMFLOAT4& color);
+        RotatingPointLight(_In_ const XMFLOAT4& position, _In_ const XMFLOAT4& color, _In_ FLOAT attenuationDistance);
         RotatingPointLight(const RotatingPointLight& other) = default;
         RotatingPointLight(RotatingPointLight&& other) = default;
         RotatingPointLight& operator=(const RotatingPointLight& other) = default;

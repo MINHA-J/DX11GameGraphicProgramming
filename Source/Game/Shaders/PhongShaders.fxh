@@ -82,9 +82,9 @@ cbuffer cbLights : register(b3)
 {
     float4 LightPositions[NUM_LIGHTS];
     float4 LightColors[NUM_LIGHTS];
-    
-    matrix LightViews[NUM_LIGHTS];
-    matrix LightProjections[NUM_LIGHTS];
+    //matrix LightViews[NUM_LIGHTS];
+    //matrix LightProjections[NUM_LIGHTS];
+    float4 AttenuationDistance[NUM_LIGHTS];
 };
 
 
@@ -173,9 +173,9 @@ PS_PHONG_INPUT VSPhong(VS_PHONG_INPUT input)
     }
     
     // Compute the each fragment¡¯s distance to the light source
-    output.LightViewPosition = mul(input.Position, World);
-    output.LightViewPosition = mul(output.LightViewPosition, LightViews[0]);
-    output.LightViewPosition = mul(output.LightViewPosition, LightProjections[0]);
+    //output.LightViewPosition = mul(input.Position, World);
+    //output.LightViewPosition = mul(output.LightViewPosition, LightViews[0]);
+    //output.LightViewPosition = mul(output.LightViewPosition, LightProjections[0]);
 
     // position of the vertex in world space
     output.WorldPosition = mul(input.Position, World);
@@ -217,6 +217,16 @@ PS_LIGHT_CUBE_INPUT VSLightCube( VS_PHONG_INPUT input )
 --------------------------------------------------------------------*/
 float4 PSPhong(PS_PHONG_INPUT input) : SV_TARGET
 {
+    float3 distanceSquared = float3(0.0f, 0.0f, 0.0f);
+    float attenuation[NUM_LIGHTS];
+    
+    for (uint light = 0u; light < NUM_LIGHTS; ++light)
+    {
+        float distanceToLight = distance(LightPositions[light].xyz, input.WorldPosition);
+        distanceSquared += dot(distanceToLight, distanceToLight);
+        attenuation[light] = AttenuationDistance[light].zw / (distanceSquared + 0.000001f);
+    }
+        
     float3 normal = normalize(input.Normal);
     if (HasNormalMap)
     {
@@ -249,17 +259,18 @@ float4 PSPhong(PS_PHONG_INPUT input) : SV_TARGET
     
     float3 ambient = float3(0.1f, 0.1f, 0.1f) * TextureColor.rgb;
     
-    // Compare the depth values 
-    if (currentDepth > closestDepth + 0.001f)
-    {
-        // If shadowed, the pixel gets only ambient light
-        return float4(ambient, 1.0f);
-    }
+    //// Compare the depth values 
+    //if (currentDepth > closestDepth + 0.001f)
+    //{
+    //    // If shadowed, the pixel gets only ambient light
+    //    return float4(ambient, 1.0f);
+    //}
     
     // ambient
+    // float3 ambient = float3(0.0f, 0.0f, 0.0f);
     for (uint i = 0u; i < NUM_LIGHTS; ++i)
     {
-        ambient += float4(float3(0.1f, 0.1f, 0.1f) * LightColors[i].xyz, 1.0f);
+        ambient += float4(float3(0.1f, 0.1f, 0.1f) * LightColors[i].xyz, 1.0f) * attenuation[i];
     }
     
     // diffuse
@@ -268,7 +279,7 @@ float4 PSPhong(PS_PHONG_INPUT input) : SV_TARGET
     for (uint j = 0u; j < NUM_LIGHTS; ++j)
     {
         lightDirection = normalize(LightPositions[j].xyz - input.WorldPosition);
-        diffuse += saturate(dot(normal, lightDirection)) * LightColors[j];
+        diffuse += saturate(dot(normal, lightDirection)) * LightColors[j] * attenuation[j];
     }
 
     // specular
@@ -280,10 +291,8 @@ float4 PSPhong(PS_PHONG_INPUT input) : SV_TARGET
     {
         lightDirection = normalize(LightPositions[k].xyz - input.WorldPosition);
         reflectDirection = reflect(-lightDirection, normal);
-        specular += pow(saturate(dot(reflectDirection, viewDirection)), shiness) * LightColors[k];
+        specular += pow(saturate(dot(reflectDirection, viewDirection)), shiness) * LightColors[k] * attenuation[k];
     }
-
-
 
     // Implement phong shading
     return float4(ambient + diffuse + specular, 1.0f) * TextureColor;

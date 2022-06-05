@@ -30,7 +30,8 @@ void RotatingCube::Update(_In_ FLOAT deltaTime)
 
     XMMATRIX mSpin = XMMatrixRotationZ(-t);
     XMMATRIX mOrbit = XMMatrixRotationY(-t * 2.0f);
-    XMMATRIX mTranslate = XMMatrixTranslation(0.0f, 30.0f, -50.0f);
+    // XMMATRIX mTranslate = XMMatrixTranslation(0.0f, 30.0f, -50.0f);
+    XMMATRIX mTranslate = XMMatrixTranslation(0.0f, 30.0f, -5.0f);
     XMMATRIX mScale = XMMatrixScaling(1.0f, 1.0f, 1.0f);
 
     m_world = mScale * mSpin * mTranslate * mOrbit;

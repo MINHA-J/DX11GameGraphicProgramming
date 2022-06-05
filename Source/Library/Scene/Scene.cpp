@@ -33,6 +33,7 @@ namespace library
         , m_vertexShaders()
         , m_pixelShaders()
         , m_materials()
+        , m_skyBox()
     {
         std::ifstream inputFile;
         inputFile.open(m_filePath.string());
@@ -158,6 +159,18 @@ namespace library
     }
 
 
+    /*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
+      Method:   Scene::Initialize
+      Summary:  Initializes the voxels, shaders, renderables, models,
+                and skybox
+      Args:     ID3D11Device* pDevice
+                  The Direct3D device to create the buffers
+                ID3D11DeviceContext* pImmediateContext
+                  The Direct3D context to set buffers
+    M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
+    /*--------------------------------------------------------------------
+      TODO: Scene::Initialize definition (remove the comment)
+    --------------------------------------------------------------------*/
     HRESULT Scene::Initialize(_In_ ID3D11Device* pDevice, _In_ ID3D11DeviceContext* pImmediateContext)
     {
         for (auto voxel : m_voxels)
@@ -219,12 +232,21 @@ namespace library
             }
         }
 
+        if (m_skyBox != nullptr)
+        {
+            HRESULT hr = m_skyBox->Initialize(pDevice, pImmediateContext);
+            if (FAILED(hr))
+            {
+                return hr;
+            }
+        }
+
         return S_OK;
     }
     
 
     /*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
-      Method:   Scene::AddRenderable
+      Method:   Scene::AddVoxel
       Summary:  Add a renderable object and initialize the object
       Args:     PCWSTR pszRenderableName
                   Key of the renderable object
@@ -356,11 +378,40 @@ namespace library
 
 
     /*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
-      Method:   Renderer::Update
-      Summary:  Update the renderables each frame
-      Args:     FLOAT deltaTime
-                  Time difference of a frame
+      Method:   Scene::AddSkyBox
+      Summary:  Add the skybox
+      Args:     const std::shared_ptr<Skybox>&
+                  Skybox to use
+      Modifies: [m_skyBox].
+      Returns:  HRESULT
+                  Status code
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
+    /*--------------------------------------------------------------------
+      TODO: Scene::AddSkyBox definition (remove the comment)
+    --------------------------------------------------------------------*/
+    HRESULT Scene::AddSkyBox(_In_ const std::shared_ptr<Skybox>& skybox)
+    {
+        if (skybox == nullptr)
+        {
+            return E_INVALIDARG;
+        }
+
+        m_skyBox = skybox;
+
+        return S_OK;
+    }
+
+
+    /*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
+     Method:   Scene::Update
+     Summary:  Update the renderables, models, point lights, skybox
+               each frame
+     Args:     FLOAT deltaTime
+                 Time difference of a frame
+    M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
+    /*--------------------------------------------------------------------
+      TODO: Scene::Update definition (remove the comment)
+    --------------------------------------------------------------------*/
     void Scene::Update(_In_ FLOAT deltaTime)
     {
         for (auto it = m_renderables.begin(); it != m_renderables.end(); ++it)
@@ -370,13 +421,15 @@ namespace library
 
         for (auto it = m_models.begin(); it != m_models.end(); ++it)
         {
-            it->second->Update(deltaTime);
+            //it->second->Update(deltaTime);
         }
 
         for (UINT lightIdx = 0; lightIdx < NUM_LIGHTS; ++lightIdx)
         {
             m_aPointLights[lightIdx]->Update(deltaTime);
         }
+
+        m_skyBox->Update(deltaTime);
     }
 
 
@@ -421,6 +474,21 @@ namespace library
     std::unordered_map<std::wstring, std::shared_ptr<Material>>& Scene::GetMaterials()
     {
         return m_materials;
+    }
+
+
+    /*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
+      Method:   Scene::GetSkyBox
+      Summary:  Returns a sky box
+      Returns:  std::shared_ptr<Skybox>&
+                  Sky box
+    M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
+    /*--------------------------------------------------------------------
+      TODO: Scene::GetSkyBox definition (remove the comment)
+    --------------------------------------------------------------------*/
+    std::shared_ptr<Skybox>& Scene::GetSkyBox()
+    {
+        return m_skyBox;
     }
 
 
