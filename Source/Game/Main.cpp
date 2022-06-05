@@ -366,6 +366,22 @@ INT WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
         return 0;
     }
 
+    XMStoreFloat4(&color, Colors::White);
+    std::shared_ptr<Cube> reflectCube = std::make_shared<Cube>(color);
+    reflectCube->Translate(XMVectorSet(10.0f, 15.0f, 0.0f, 0.0f));
+    if (FAILED(mainScene->AddRenderable(L"ReflectCube", reflectCube)))
+    {
+        return 0;
+    }
+    if (FAILED(mainScene->SetVertexShaderOfRenderable(L"ReflectCube", L"EnvironmentMapShader")))
+    {
+        return 0;
+    }
+    if (FAILED(mainScene->SetPixelShaderOfRenderable(L"ReflectCube", L"EnvironmentMapShader")))
+    {
+        return 0;
+    }
+
     //XMStoreFloat4(&color, Colors::White);
     //std::shared_ptr<library::RotatingPointLight> rotatingDirectionalLight = std::make_shared<library::RotatingPointLight>(
     //    XMFLOAT4(0.0f, 300.0f, 0.0f, 1.0f),

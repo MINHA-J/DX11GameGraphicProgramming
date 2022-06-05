@@ -168,9 +168,6 @@ namespace library
                 ID3D11DeviceContext* pImmediateContext
                   The Direct3D context to set buffers
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    /*--------------------------------------------------------------------
-      TODO: Scene::Initialize definition (remove the comment)
-    --------------------------------------------------------------------*/
     HRESULT Scene::Initialize(_In_ ID3D11Device* pDevice, _In_ ID3D11DeviceContext* pImmediateContext)
     {
         for (auto voxel : m_voxels)
@@ -386,9 +383,6 @@ namespace library
       Returns:  HRESULT
                   Status code
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    /*--------------------------------------------------------------------
-      TODO: Scene::AddSkyBox definition (remove the comment)
-    --------------------------------------------------------------------*/
     HRESULT Scene::AddSkyBox(_In_ const std::shared_ptr<Skybox>& skybox)
     {
         if (skybox == nullptr)
@@ -421,7 +415,8 @@ namespace library
 
         for (auto it = m_models.begin(); it != m_models.end(); ++it)
         {
-            //it->second->Update(deltaTime);
+            // it->second->Update(deltaTime);
+            // TODO? 오류발생으로 임시로 제거
         }
 
         for (UINT lightIdx = 0; lightIdx < NUM_LIGHTS; ++lightIdx)
@@ -483,9 +478,6 @@ namespace library
       Returns:  std::shared_ptr<Skybox>&
                   Sky box
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    /*--------------------------------------------------------------------
-      TODO: Scene::GetSkyBox definition (remove the comment)
-    --------------------------------------------------------------------*/
     std::shared_ptr<Skybox>& Scene::GetSkyBox()
     {
         return m_skyBox;

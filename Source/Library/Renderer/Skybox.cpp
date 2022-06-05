@@ -18,9 +18,6 @@ namespace library
 
       Modifies: [m_cubeMapFileName, m_scale].
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    /*--------------------------------------------------------------------
-      TODO: Skybox::Skybox definition (remove the comment)
-    --------------------------------------------------------------------*/
     Skybox::Skybox(_In_ const std::filesystem::path& cubeMapFilePath, _In_ FLOAT scale)
         : Model("Content/Common/Sphere.obj")
         , m_cubeMapFileName(cubeMapFilePath)
@@ -40,9 +37,6 @@ namespace library
 
       Modifies: [m_aMeshes, m_aMaterials].
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    /*--------------------------------------------------------------------
-      TODO: Skybox::Initialize definition (remove the comment)
-    --------------------------------------------------------------------*/
     HRESULT Skybox::Initialize(_In_ ID3D11Device* pDevice, _In_ ID3D11DeviceContext* pImmediateContext)
     {
         HRESULT hr = S_OK;
@@ -80,9 +74,6 @@ namespace library
       Returns:  const std::shared_ptr<Texture>&
                   Cube map texture object
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    /*--------------------------------------------------------------------
-      TODO: Skybox::GetSkyboxTexture definition (remove the comment)
-    --------------------------------------------------------------------*/
     const std::shared_ptr<Texture>& Skybox::GetSkyboxTexture() const
     {
         // Returns the diffuse texture of the first material
@@ -100,9 +91,6 @@ namespace library
                 const aiMesh* pMesh
                   Point to an assimp mesh object
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    /*--------------------------------------------------------------------
-      TODO: Skybox::initSingleMesh definition (remove the comment)
-    --------------------------------------------------------------------*/
     void Skybox::initSingleMesh(_In_ UINT uMeshIndex, _In_ const aiMesh* pMesh)
     {
         // Is the same as the parent¡¯s initSingleMesh except that the order of indices are reversed

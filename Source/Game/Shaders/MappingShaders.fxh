@@ -8,8 +8,9 @@
 //--------------------------------------------------------------------------------------
 // Global Variables
 //--------------------------------------------------------------------------------------
-Texture2D diffuseTexture : register(t0);
-TextureCube EnvironmentMap : register(t1);
+TextureCube EnvironmentMap : register(t0);
+Texture2D diffuseTexture : register(t1);
+
 SamplerState TextureSampler : register(s0);
 
 

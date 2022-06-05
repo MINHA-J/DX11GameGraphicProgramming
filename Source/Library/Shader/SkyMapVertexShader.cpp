@@ -16,9 +16,6 @@ namespace library
                   Specifies the shader target or set of shader features
                   to compile against
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    /*--------------------------------------------------------------------
-      TODO: SkyMapVertexShader::SkyMapVertexShader definition (remove the comment)
-    --------------------------------------------------------------------*/
     SkyMapVertexShader::SkyMapVertexShader(_In_ PCWSTR pszFileName, _In_ PCSTR pszEntryPoint, _In_ PCSTR pszShaderModel)
         : VertexShader(pszFileName, pszEntryPoint, pszShaderModel)
     {}
@@ -35,9 +32,6 @@ namespace library
       Returns:  HRESULT
                   Status code
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    /*--------------------------------------------------------------------
-      TODO: SkyMapVertexShader::Initialize definition (remove the comment)
-    --------------------------------------------------------------------*/
     HRESULT SkyMapVertexShader::Initialize(_In_ ID3D11Device* pDevice)
     {
         ComPtr<ID3DBlob> vsBlob;
