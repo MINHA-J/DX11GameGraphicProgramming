@@ -283,7 +283,7 @@ INT WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
         return 0;
     }
 
-    std::shared_ptr<library::Skybox> skybox = std::make_shared<library::Skybox>(L"Content/Common/Maskonaive2_1024.dds", 1000.0f);
+    std::shared_ptr<library::Skybox> skybox = std::make_shared<library::Skybox>(L"Content/Common/Maskonaive2_1024.dds", 900.0f);
     skybox->SetVertexShader(cubeMapVertexShader);
     skybox->SetPixelShader(cubeMapPixelShader);
     if (FAILED(mainScene->AddSkyBox(skybox)))
@@ -294,7 +294,6 @@ INT WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 
     //--------------------------------------------------------------------
     //  TODO: Example model definition (remove the comment)
-    //  example:
     //std::shared_ptr<library::Model> sponza = std::make_shared<library::Model>(L"Content/Sponza/sponza.obj");
     //sponza->Scale(0.1f, 0.1f, 0.1f);
     //if (FAILED(mainScene->AddModel(L"Sponza", sponza)))
@@ -312,31 +311,21 @@ INT WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
     //    return 0;
     //}
 
+    // TODO? 오류 발생으로 임시로 제거해둠
+    //std::shared_ptr<library::Model> nanosuit = std::make_shared<library::Model>(L"Content/Nanosuit/nanosuit.obj");
 
-    std::shared_ptr<library::Model> nanosuit = std::make_shared<library::Model>(L"Content/Nanosuit/nanosuit.obj");
-
-     if (FAILED(mainScene->AddModel(L"Nanosuit", nanosuit)))
-    {
-        return 0;
-    }
-    //if (FAILED(mainScene->SetVertexShaderOfModel(L"Sponza", L"PhongShader")))
-     if (FAILED(mainScene->SetVertexShaderOfModel(L"Nanosuit", L"PhongShader")))
-     {
-         return 0;
-     }
-     //if (FAILED(mainScene->SetPixelShaderOfModel(L"Sponza", L"PhongShader")))
-     if (FAILED(mainScene->SetPixelShaderOfModel(L"Nanosuit", L"PhongShader")))
-     {
-         return 0;
-     }
-    //if (FAILED(mainScene->SetVertexShaderOfModel(L"Nanosuit", L"PhongShader")))
+    // if (FAILED(mainScene->AddModel(L"Nanosuit", nanosuit)))
     //{
     //    return 0;
     //}
-    //if (FAILED(mainScene->SetPixelShaderOfModel(L"Nanosuit", L"PhongShader")))
-    //{
-    //    return 0;
-    //}
+    // if (FAILED(mainScene->SetVertexShaderOfModel(L"Nanosuit", L"PhongShader")))
+    // {
+    //     return 0;
+    // }
+    // if (FAILED(mainScene->SetPixelShaderOfModel(L"Nanosuit", L"PhongShader")))
+    // {
+    //     return 0;
+    // }
 
     XMFLOAT4 color;
     XMStoreFloat4(&color, Colors::Orange);

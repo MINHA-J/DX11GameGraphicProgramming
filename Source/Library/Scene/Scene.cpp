@@ -415,8 +415,7 @@ namespace library
 
         for (auto it = m_models.begin(); it != m_models.end(); ++it)
         {
-            // it->second->Update(deltaTime);
-            // TODO? 오류발생으로 임시로 제거
+            it->second->Update(deltaTime);
         }
 
         for (UINT lightIdx = 0; lightIdx < NUM_LIGHTS; ++lightIdx)

@@ -6,7 +6,7 @@
 
 #define NUM_LIGHTS (1)
 #define NEAR_PLANE (0.01f)
-#define FAR_PLANE (1000.0f)
+#define FAR_PLANE (1200.0f)
 
 //--------------------------------------------------------------------------------------
 // Global Variables
@@ -259,12 +259,12 @@ float4 PSPhong(PS_PHONG_INPUT input) : SV_TARGET
     
     float3 ambient = float3(0.1f, 0.1f, 0.1f) * TextureColor.rgb;
     
-    //// Compare the depth values 
-    //if (currentDepth > closestDepth + 0.001f)
-    //{
-    //    // If shadowed, the pixel gets only ambient light
-    //    return float4(ambient, 1.0f);
-    //}
+    // Compare the depth values 
+    if (currentDepth > closestDepth + 0.001f)
+    {
+        // If shadowed, the pixel gets only ambient light
+        return float4(ambient, 1.0f);
+    }
     
     // ambient
     // float3 ambient = float3(0.0f, 0.0f, 0.0f);
